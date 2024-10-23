@@ -83,10 +83,30 @@ namespace DrivingSchoolAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Client>> PostClient(Client client)
         {
-            _context.Client.Add(client);
-            await _context.SaveChangesAsync();
+            var result = await _context.Database.ExecuteSqlRawAsync(
+               "EXEC DodajKlient @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10",
+               client.ClientFirstName,            // @p0
+               client.ClientLastName,        // @p1
+               client.ClientBirthDay,   // @p2
+               client.ClientPhoneNumber,      // @p3
+               client.ClientEmail,      // @p4
+               client.ClientPassword,           // @p5
+               client.ZipCode.ZipCodeNumber,     // @p6
+               client.City.CityName,          // @p7
+               client.ClientHouseNumber,       // @p8
+               client.ClientFlatNumber,     // @p9
+               client.ClientStatus          // @p10
+           );
 
-            return CreatedAtAction("GetClient", new { id = client.IdClient }, client);
+            // Sprawdzenie wyniku wykonania procedury
+            if (result >= 0) // Jeśli procedura zakończyła się sukcesem
+            {
+                return CreatedAtAction("GetClient", new { id = client.IdClient }, client);
+            }
+            else
+            {
+                return StatusCode(500, "Błąd podczas dodawania klienta.");
+            }
         }
 
         // DELETE: api/Client/5
