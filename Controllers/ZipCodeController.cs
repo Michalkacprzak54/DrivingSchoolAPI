@@ -25,14 +25,14 @@ namespace DrivingSchoolAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ZipCode>>> GetZipCode()
         {
-            return await _context.ZipCode.ToListAsync();
+            return await _context.ZipCodes.ToListAsync();
         }
 
         // GET: api/ZipCode/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ZipCode>> GetZipCode(int id)
         {
-            var zipCode = await _context.ZipCode.FindAsync(id);
+            var zipCode = await _context.ZipCodes.FindAsync(id);
 
             if (zipCode == null)
             {
@@ -46,7 +46,7 @@ namespace DrivingSchoolAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<ZipCode>> PostZipCode(ZipCode zipCode)
         {
-            _context.ZipCode.Add(zipCode);
+            _context.ZipCodes.Add(zipCode);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetZipCode", new { id = zipCode.IdZipCode }, zipCode);

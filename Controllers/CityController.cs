@@ -25,14 +25,14 @@ namespace DrivingSchoolAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<City>>> GetCity()
         {
-            return await _context.City.ToListAsync();
+            return await _context.Cities.ToListAsync();
         }
 
         // GET: api/City/5
         [HttpGet("{id}")]
         public async Task<ActionResult<City>> GetCity(int id)
         {
-            var city = await _context.City.FindAsync(id);
+            var city = await _context.Cities.FindAsync(id);
 
             if (city == null)
             {
@@ -46,7 +46,7 @@ namespace DrivingSchoolAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<City>> PostCity(City city)
         {
-            _context.City.Add(city);
+            _context.Cities.Add(city);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetCity", new { id = city.IdCity }, city);

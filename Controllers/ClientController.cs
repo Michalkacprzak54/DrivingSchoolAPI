@@ -25,7 +25,7 @@ namespace DrivingSchoolAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Client>>> GetClient()
         {
-            var clients = await _context.Client
+            var clients = await _context.Clients
                 .Include(c => c.City)
                 .Include(c => c.ZipCode)
                 .ToListAsync(); 
@@ -37,7 +37,7 @@ namespace DrivingSchoolAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Client>> GetClient(int id)
         {
-            var client = await _context.Client.FindAsync(id);
+            var client = await _context.Clients.FindAsync(id);
 
             if (client == null)
             {
@@ -113,13 +113,13 @@ namespace DrivingSchoolAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteClient(int id)
         {
-            var client = await _context.Client.FindAsync(id);
+            var client = await _context.Clients.FindAsync(id);
             if (client == null)
             {
                 return NotFound();
             }
 
-            _context.Client.Remove(client);
+            _context.Clients.Remove(client);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -127,7 +127,7 @@ namespace DrivingSchoolAPI.Controllers
 
         private bool ClientExists(int id)
         {
-            return _context.Client.Any(e => e.IdClient == id);
+            return _context.Clients.Any(e => e.IdClient == id);
         }
     }
 }

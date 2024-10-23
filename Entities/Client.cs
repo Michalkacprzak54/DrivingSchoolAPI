@@ -36,5 +36,7 @@ namespace DrivingSchoolAPI.Entities
 
         public City City { get; set; }
         public ZipCode ZipCode { get; set; }
+
+        public ICollection<ClientService> ClientServices { get; set; }
     }
 }

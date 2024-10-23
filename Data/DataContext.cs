@@ -10,9 +10,11 @@ namespace DrivingSchoolAPI.Data
             
         }
 
-        public DbSet<Client> Client { get; set; }
-        public DbSet<City> City{ get; set; }
-        public DbSet<ZipCode> ZipCode{ get; set; }
+        public DbSet<Client> Clients { get; set; }
+        public DbSet<City> Cities{ get; set; }
+        public DbSet<ZipCode> ZipCodes{ get; set; }
+        public DbSet<Service> Services{ get; set; }
+        public DbSet<ClientService> ClientServices{ get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +33,14 @@ namespace DrivingSchoolAPI.Data
                 .ToTable("kod_pocztowy")
                 .HasKey(z => z.IdZipCode);
 
+            modelBuilder.Entity<Service>()
+                .ToTable("usluga")
+                .HasKey(s => s.IdService);
+
+            modelBuilder.Entity<ClientService>()
+                .ToTable("klient_usluga")
+                .HasKey(cs => cs.IdClientService);
+
             modelBuilder.Entity<Client>()
                 .HasOne(c => c.City)
                 .WithMany()
@@ -41,7 +51,18 @@ namespace DrivingSchoolAPI.Data
                 .WithMany()
                 .HasForeignKey(c => c.ClientIdZipCode);
 
+            modelBuilder.Entity<ClientService>()
+                .HasOne(cs => cs.Client)
+                .WithMany(c => c.ClientServices)
+                .HasForeignKey(cs => cs.ClientId);
+
+            modelBuilder.Entity<ClientService>()
+                .HasOne(cs => cs.Service)
+                .WithMany()
+                .HasForeignKey(cs => cs.ServiceId);
+
+
         }
-        
+
     }
 }
