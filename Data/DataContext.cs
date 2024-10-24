@@ -15,6 +15,8 @@ namespace DrivingSchoolAPI.Data
         public DbSet<ZipCode> ZipCodes{ get; set; }
         public DbSet<Service> Services{ get; set; }
         public DbSet<ClientService> ClientServices{ get; set; }
+        public DbSet<Instructor> Instructors{ get; set; }
+        public DbSet<InstructorDetails> InstructorDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +43,14 @@ namespace DrivingSchoolAPI.Data
                 .ToTable("klient_usluga")
                 .HasKey(cs => cs.IdClientService);
 
+            modelBuilder.Entity<Instructor>()
+                .ToTable("instruktor")
+                .HasKey(i => i.IdInstructor);
+
+            modelBuilder.Entity<InstructorDetails>()
+                .ToTable("szczegoly_instruktor")
+                .HasKey(id => id.IdInstructorDetails);
+
             modelBuilder.Entity<Client>()
                 .HasOne(c => c.City)
                 .WithMany()
@@ -60,6 +70,23 @@ namespace DrivingSchoolAPI.Data
                 .HasOne(cs => cs.Service)
                 .WithMany()
                 .HasForeignKey(cs => cs.ServiceId);
+
+            modelBuilder.Entity<Instructor>()
+                .HasOne(i => i.InstructorDetails)
+                .WithOne(d => d.Instructor)
+                .HasForeignKey<InstructorDetails>(d => d.IdInstructor)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<InstructorDetails>()
+                .HasOne(id => id.City)
+                .WithMany()
+                .HasForeignKey(id => id.InstructorCityId);
+
+            modelBuilder.Entity<InstructorDetails>()
+                .HasOne(id => id.ZipCode)
+                .WithMany()
+                .HasForeignKey(id => id.InstructorZipCodeId);
+
 
 
         }
