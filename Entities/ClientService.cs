@@ -19,7 +19,7 @@ namespace DrivingSchoolAPI.Entities
         [Column("ilosc")]
         public int Quantity { get; set; }
 
-        [Column("status")]
+        [Column("stan")]
         public string Status { get; set; }
 
         // Używaj właściwości Client i Service bez prefixów

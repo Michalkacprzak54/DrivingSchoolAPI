@@ -17,5 +17,8 @@ namespace DrivingSchoolAPI.Entities
         public int ServiceVatRate { get; set; }
         [Column("typ_usluga")]
         public string ServiceType { get; set; }
+
+        public TraineeCourse TraineeCourse { get; set; }
+        public ServicePromotion ServicePromotion { get; set; }
     }
 }
