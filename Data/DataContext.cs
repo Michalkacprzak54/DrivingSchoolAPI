@@ -23,6 +23,9 @@ namespace DrivingSchoolAPI.Data
         public DbSet<Instructor> Instructors{ get; set; }
         public DbSet<InstructorDetails> InstructorDetails { get; set; }
         public DbSet<TraineeCourse> TraineeCourses { get; set; }
+        public DbSet<Invoice> Invocies { get; set; }
+        public DbSet<InvoiceItem> InvocieItems { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -78,6 +81,18 @@ namespace DrivingSchoolAPI.Data
             modelBuilder.Entity<ServicePromotion>()
                 .ToTable("usluga_promocja")
                 .HasKey(p => p.IdServicePromotion);
+
+            modelBuilder.Entity<Invoice>()
+                .ToTable("faktura")
+                .HasKey(i => i.IdInvocie);
+
+            modelBuilder.Entity<InvoiceItem>()
+                .ToTable("pozycja_faktura")
+                .HasKey(it => it.IdInvoiceItem);
+
+            modelBuilder.Entity<Payment>()
+                .ToTable("platnosc")
+                .HasKey(p => p.IdPayment);
 
             ///////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////
@@ -143,6 +158,23 @@ namespace DrivingSchoolAPI.Data
                 .HasOne(sp => sp.Promotion)
                 .WithOne(p => p.ServicePromotion)
                 .HasForeignKey<ServicePromotion>(sp => sp.IdPromotion);
+
+            modelBuilder.Entity<Invoice>()
+                .HasOne(i => i.Client)
+                .WithMany()
+                .HasForeignKey(i => i.IdClient);
+
+            modelBuilder.Entity<Invoice>()
+                .HasMany(i => i.InvoviceItems)
+                .WithOne(ii => ii.Invoice)
+                .HasForeignKey(ii => ii.IdInvocie);
+
+            modelBuilder.Entity<Invoice>()
+                .HasMany(i => i.Payments)
+                .WithOne(p => p.Invoice)
+                .HasForeignKey(p => p.IdInvoice);
+
+
 
 
         }
