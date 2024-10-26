@@ -13,6 +13,7 @@ namespace DrivingSchoolAPI.Data
         public DbSet<City> Cities{ get; set; }
         public DbSet<ZipCode> ZipCodes{ get; set; }
         public DbSet<Status> Statuses{ get; set; }
+        public DbSet<Entitlement> Entitlements{ get; set; }
 
 
         public DbSet<Client> Clients { get; set; }
@@ -26,6 +27,12 @@ namespace DrivingSchoolAPI.Data
         public DbSet<Invoice> Invocies { get; set; }
         public DbSet<InvoiceItem> InvocieItems { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<CourseDetails> CourseDetails { get; set; }
+        public DbSet<InscrutorEntitlement> InscrutorEntitlements { get; set; }
+        public DbSet<TheorySchedule> TheorySchedules { get; set; }
+        public DbSet<LecturePresence> LecturePresences { get; set; }
+        public DbSet<Pratice> Pratices { get; set; }
+        public DbSet<PraticeSchedule> PraticeSchedules { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,6 +52,10 @@ namespace DrivingSchoolAPI.Data
             modelBuilder.Entity<ZipCode>()
                 .ToTable("kod_pocztowy")
                 .HasKey(z => z.IdZipCode);
+
+            modelBuilder.Entity<Entitlement>()
+                .ToTable("uprawnienia")
+                .HasKey(z => z.IdEntitlement);
 
             ///////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////
@@ -94,6 +105,30 @@ namespace DrivingSchoolAPI.Data
                 .ToTable("platnosc")
                 .HasKey(p => p.IdPayment);
 
+            modelBuilder.Entity<CourseDetails>()
+                .ToTable("szczegoly_kurs")
+                .HasKey(cd => cd.IdCourseDetails);
+
+            modelBuilder.Entity<InscrutorEntitlement>()
+                .ToTable("instruktor_uprawnienie")
+                .HasKey(cd => cd.IdInscrutorEntitlement);
+
+            modelBuilder.Entity<TheorySchedule>()
+                .ToTable("harmonogram_wyklad")
+                .HasKey(ts => ts.IdTheorySchedule);
+
+            modelBuilder.Entity<LecturePresence>()
+                .ToTable("obecnosc_wyklad")
+                .HasKey(lp => lp.IdLecturePresence);
+
+            modelBuilder.Entity<Pratice>()
+                .ToTable("praktyka")
+                .HasKey(p => p.IdPratice);
+
+            modelBuilder.Entity<PraticeSchedule>()
+               .ToTable("harmonogram_praktyka")
+               .HasKey(p => p.IdPraticeSchedule);
+
             ///////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////
@@ -123,6 +158,7 @@ namespace DrivingSchoolAPI.Data
                 .WithOne(d => d.Instructor)
                 .HasForeignKey<InstructorDetails>(d => d.IdInstructor)
                 .OnDelete(DeleteBehavior.Cascade);
+
 
             modelBuilder.Entity<InstructorDetails>()
                 .HasOne(id => id.City)
@@ -173,6 +209,21 @@ namespace DrivingSchoolAPI.Data
                 .HasMany(i => i.Payments)
                 .WithOne(p => p.Invoice)
                 .HasForeignKey(p => p.IdInvoice);
+
+            modelBuilder.Entity<TraineeCourse>()
+                .HasOne(tc => tc.CourseDetails)
+                .WithOne(cd => cd.TraineeCourse)
+                .HasForeignKey<CourseDetails>(cd => cd.IdTraineeCourse);
+
+            modelBuilder.Entity<InscrutorEntitlement>()
+                .HasOne(ie => ie.Instructor)
+                .WithMany(i => i.InstructorEntitlements)
+                .HasForeignKey(ie => ie.IdInstructor);
+
+            modelBuilder.Entity<InscrutorEntitlement>()
+                .HasOne(ie => ie.Entitlement)
+                .WithMany(e => e.InstructorEntitlements)
+                .HasForeignKey(ie => ie.IdEntitlement);
 
 
 

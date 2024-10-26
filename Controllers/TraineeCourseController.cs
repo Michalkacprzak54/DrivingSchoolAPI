@@ -42,6 +42,7 @@ namespace DrivingSchoolAPI.Controllers
                 .Include(tc => tc.Client)
                 .Include(tc => tc.Service)
                 .Include(tc => tc.Status)
+                .Include(tc => tc.CourseDetails)
                 .FirstOrDefaultAsync(i => i.IdClient == id);
 
             if (traineeCourse == null)

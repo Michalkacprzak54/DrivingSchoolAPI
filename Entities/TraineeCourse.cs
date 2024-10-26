@@ -26,6 +26,7 @@ namespace DrivingSchoolAPI.Entities
         public Client Client { get; set; }
         public Service Service { get; set; }
         public Status Status { get; set; }
+        public CourseDetails CourseDetails { get; set; }
 
     }
 }

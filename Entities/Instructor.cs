@@ -22,6 +22,7 @@ namespace DrivingSchoolAPI.Entities
         public bool InstructorTheory { get; set; }
 
         public InstructorDetails? InstructorDetails { get; set; }
+        public ICollection<InscrutorEntitlement> InstructorEntitlements { get; set; }
 
 
     }
