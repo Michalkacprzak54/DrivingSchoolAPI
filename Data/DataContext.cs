@@ -159,6 +159,15 @@ namespace DrivingSchoolAPI.Data
                 .HasForeignKey<InstructorDetails>(d => d.IdInstructor)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Instructor>()
+                .HasMany(i => i.InstructorEntitlements)
+                .WithOne(ie => ie.Instructor)
+                .HasForeignKey(ie => ie.IdInstructor);
+
+            modelBuilder.Entity<InscrutorEntitlement>()
+                .HasOne(ie => ie.Entitlement)
+                .WithMany(e => e.InstructorEntitlements)
+                .HasForeignKey(ie => ie.IdEntitlement);
 
             modelBuilder.Entity<InstructorDetails>()
                 .HasOne(id => id.City)
@@ -215,15 +224,7 @@ namespace DrivingSchoolAPI.Data
                 .WithOne(cd => cd.TraineeCourse)
                 .HasForeignKey<CourseDetails>(cd => cd.IdTraineeCourse);
 
-            modelBuilder.Entity<InscrutorEntitlement>()
-                .HasOne(ie => ie.Instructor)
-                .WithMany(i => i.InstructorEntitlements)
-                .HasForeignKey(ie => ie.IdInstructor);
-
-            modelBuilder.Entity<InscrutorEntitlement>()
-                .HasOne(ie => ie.Entitlement)
-                .WithMany(e => e.InstructorEntitlements)
-                .HasForeignKey(ie => ie.IdEntitlement);
+            
 
 
 

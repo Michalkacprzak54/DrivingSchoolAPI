@@ -37,7 +37,13 @@ namespace DrivingSchoolAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Client>> GetClient(int id)
         {
-            var client = await _context.Clients.FindAsync(id);
+            var client = await _context.Clients
+                .Include(c => c.City)
+                .Include(c => c.ZipCode)
+                //.Include(c => c.TraineeCourse)
+                .Include(c => c.ClientServices)
+                    .ThenInclude(cs => cs.Service)
+                .FirstAsync(c => c.IdClient == id);
 
             if (client == null)
             {

@@ -34,16 +34,11 @@ namespace DrivingSchoolAPI.Controllers
         public async Task<ActionResult<Instructor>> GetInstructor(int id)
         {
             var instructor = await _context.Instructors
-                .Include(i => i.InstructorDetails) 
-                .Include(i => i.InstructorDetails.City) 
-                .Include(i => i.InstructorDetails.ZipCode) 
-                .FirstOrDefaultAsync(i => i.IdInstructor == id);
+                .Include(i => i.InstructorEntitlements)
+                    .ThenInclude(e => e.Entitlement)
+                .FirstAsync(i => i.IdInstructor == id);
 
-            if (instructor == null)
-            {
-                return NotFound();
-            }
-
+            
             return instructor;
         }
 
