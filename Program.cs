@@ -9,14 +9,22 @@ namespace DrivingSchoolAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Dodaj konfigurację CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin", builder =>
+                {
+                    builder.WithOrigins("https://localhost:5173") // Adres frontendu
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+            });
+
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
                 options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
             });
-
-
-            builder.Services.AddControllers();
 
             builder.Services.AddDbContext<DataContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -35,11 +43,12 @@ namespace DrivingSchoolAPI
 
             app.UseHttpsRedirection();
 
+            // Użyj CORS
+            app.UseCors("AllowSpecificOrigin");
+
             app.UseAuthorization();
 
-
             app.MapControllers();
-
 
             app.Run();
         }
