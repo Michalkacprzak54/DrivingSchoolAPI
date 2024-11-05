@@ -60,28 +60,39 @@ namespace DrivingSchoolAPI.Controllers
         {
             if (id != client.IdClient)
             {
-                return BadRequest();
+                return BadRequest("ID w URL nie zgadza się z ID klienta.");
             }
-
-            _context.Entry(client).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ClientExists(id))
+                var result = await _context.Database.ExecuteSqlRawAsync(
+               "EXEC EdytujKlient @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10",
+               client.ClientFirstName,            // @p0
+               client.ClientLastName,        // @p1
+               client.ClientBirthDay,   // @p2
+               client.ClientPhoneNumber,      // @p3
+               client.ClientEmail,      // @p4
+               client.ClientPassword,           // @p5
+               client.ZipCode.ZipCodeNumber,     // @p6
+               client.City.CityName,          // @p7
+               client.ClientHouseNumber,       // @p8
+               client.ClientFlatNumber,     // @p9
+               client.ClientStatus          // @p10
+               );
+
+                // Sprawdzenie wyniku wykonania procedury
+                if (result >= 0) // Jeśli procedura zakończyła się sukcesem
                 {
-                    return NotFound();
+                    return NoContent();
                 }
                 else
                 {
-                    throw;
+                    return StatusCode(500, "Błąd podczas edytowania klienta.");
                 }
             }
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Błąd serwera: {ex.Message}");
+            }
         }
 
         // POST: api/Client
