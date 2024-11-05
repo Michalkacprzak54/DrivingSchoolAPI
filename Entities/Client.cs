@@ -34,9 +34,9 @@ namespace DrivingSchoolAPI.Entities
         [Column("czy_kursant")]
         public bool ClientStatus { get; set; }
 
-        public City City { get; set; }
-        public ZipCode ZipCode { get; set; }
-        public TraineeCourse TraineeCourse { get; set; }
-        public ICollection<ClientService> ClientServices { get; set; }
+        public City? City { get; set; }
+        public ZipCode? ZipCode { get; set; }
+        public TraineeCourse? TraineeCourse { get; set; }
+        public ICollection<ClientService>? ClientServices { get; set; }
     }
 }
