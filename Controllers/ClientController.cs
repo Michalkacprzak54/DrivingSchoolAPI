@@ -65,7 +65,8 @@ namespace DrivingSchoolAPI.Controllers
             try
             {
                 var result = await _context.Database.ExecuteSqlRawAsync(
-               "EXEC EdytujKlient @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10",
+               "EXEC EdytujKlient @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11",
+               client.IdClient,             //@p11
                client.ClientFirstName,            // @p0
                client.ClientLastName,        // @p1
                client.ClientBirthDay,   // @p2
@@ -91,6 +92,7 @@ namespace DrivingSchoolAPI.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 return StatusCode(500, $"Błąd serwera: {ex.Message}");
             }
         }
