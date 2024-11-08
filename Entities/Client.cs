@@ -19,10 +19,7 @@ namespace DrivingSchoolAPI.Entities
         public DateOnly ClientBirthDay { get; set; }
         [Column("nr_telefonu")]
         public string ClientPhoneNumber { get; set; }
-        [Column("adres_email")]
-        public string ClientEmail { get; set; }
-        [Column("haslo")]
-        public string ClientPassword { get; set; }
+
         [Column("id_kod_pocztowy")]
         public int ClientIdZipCode { get; set; }
         [Column("id_miasto")]
@@ -34,6 +31,7 @@ namespace DrivingSchoolAPI.Entities
         [Column("czy_kursant")]
         public bool ClientStatus { get; set; }
 
+        public ClientLogin? ClientLogin { get; set; }
         public City? City { get; set; }
         public ZipCode? ZipCode { get; set; }
         public TraineeCourse? TraineeCourse { get; set; }

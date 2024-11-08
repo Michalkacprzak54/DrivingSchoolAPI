@@ -17,6 +17,7 @@ namespace DrivingSchoolAPI.Data
 
 
         public DbSet<Client> Clients { get; set; }
+        public DbSet<ClientLogin> ClientLogins { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<ServicePromotion> ServicePromotions { get; set; }
         public DbSet<Service> Services{ get; set; }
@@ -64,6 +65,10 @@ namespace DrivingSchoolAPI.Data
             modelBuilder.Entity<Client>()
                 .ToTable("klient")
                 .HasKey(c => c.IdClient);
+
+            modelBuilder.Entity<ClientLogin>()
+                .ToTable("login_klient")
+                .HasKey(cl => cl.IdClientLogin);
 
             modelBuilder.Entity<Service>()
                 .ToTable("usluga")
@@ -132,6 +137,12 @@ namespace DrivingSchoolAPI.Data
             ///////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////
+
+            modelBuilder.Entity<Client>()
+                .HasOne(c => c.ClientLogin)
+                .WithOne()  
+                .HasForeignKey<ClientLogin>(cl => cl.IdClient);
+
 
             modelBuilder.Entity<Client>()
                 .HasOne(c => c.City)

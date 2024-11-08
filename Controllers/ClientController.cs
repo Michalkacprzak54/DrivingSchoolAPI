@@ -28,6 +28,7 @@ namespace DrivingSchoolAPI.Controllers
             var clients = await _context.Clients
                 .Include(c => c.City)
                 .Include(c => c.ZipCode)
+                .Include(c => c.ClientLogin)
                 .ToListAsync(); 
 
             return Ok(clients);
@@ -55,47 +56,45 @@ namespace DrivingSchoolAPI.Controllers
 
         // PUT: api/Client/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutClient(int id, Client client)
-        {
-            if (id != client.IdClient)
-            {
-                return BadRequest("ID w URL nie zgadza się z ID klienta.");
-            }
-            try
-            {
-                var result = await _context.Database.ExecuteSqlRawAsync(
-               "EXEC EdytujKlient @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11",
-               client.IdClient,             //@p11
-               client.ClientFirstName,            // @p0
-               client.ClientLastName,        // @p1
-               client.ClientBirthDay,   // @p2
-               client.ClientPhoneNumber,      // @p3
-               client.ClientEmail,      // @p4
-               client.ClientPassword,           // @p5
-               client.ZipCode.ZipCodeNumber,     // @p6
-               client.City.CityName,          // @p7
-               client.ClientHouseNumber,       // @p8
-               client.ClientFlatNumber,     // @p9
-               client.ClientStatus          // @p10
-               );
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> PutClient(int id, Client client)
+        //{
+        //    if (id != client.IdClient)
+        //    {
+        //        return BadRequest("ID w URL nie zgadza się z ID klienta.");
+        //    }
+        //    try
+        //    {
+        //        var result = await _context.Database.ExecuteSqlRawAsync(
+        //       "EXEC EdytujKlient @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9",
+        //       client.IdClient,             //@p11
+        //       client.ClientFirstName,            // @p0
+        //       client.ClientLastName,        // @p1
+        //       client.ClientBirthDay,   // @p2
+        //       client.ClientPhoneNumber,      // @p3
+        //       client.ZipCode.ZipCodeNumber,     // @p6
+        //       client.City.CityName,          // @p7
+        //       client.ClientHouseNumber,       // @p8
+        //       client.ClientFlatNumber,     // @p9
+        //       client.ClientStatus          // @p10
+        //       );
 
-                // Sprawdzenie wyniku wykonania procedury
-                if (result >= 0) // Jeśli procedura zakończyła się sukcesem
-                {
-                    return NoContent();
-                }
-                else
-                {
-                    return StatusCode(500, "Błąd podczas edytowania klienta.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                return StatusCode(500, $"Błąd serwera: {ex.Message}");
-            }
-        }
+        //        // Sprawdzenie wyniku wykonania procedury
+        //        if (result >= 0) // Jeśli procedura zakończyła się sukcesem
+        //        {
+        //            return NoContent();
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, "Błąd podczas edytowania klienta.");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.ToString());
+        //        return StatusCode(500, $"Błąd serwera: {ex.Message}");
+        //    }
+        //}
 
         // POST: api/Client
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -106,10 +105,10 @@ namespace DrivingSchoolAPI.Controllers
                "EXEC DodajKlient @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10",
                client.ClientFirstName,            // @p0
                client.ClientLastName,        // @p1
-               client.ClientBirthDay,   // @p2
+               client.ClientBirthDay,        // @p2
                client.ClientPhoneNumber,      // @p3
-               client.ClientEmail,      // @p4
-               client.ClientPassword,           // @p5
+               client.ClientLogin.ClientEmail,      // @p4
+               client.ClientLogin.ClientPassword,      // @p5
                client.ZipCode.ZipCodeNumber,     // @p6
                client.City.CityName,          // @p7
                client.ClientHouseNumber,       // @p8
