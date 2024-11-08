@@ -4,7 +4,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using BCrypt.Net;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace DrivingSchoolAPI.Controllers
 {
@@ -13,10 +17,12 @@ namespace DrivingSchoolAPI.Controllers
     public class ClientLoginController : ControllerBase
     {
         private readonly DataContext _context;
+        private readonly IConfiguration _configuration;
 
-        public ClientLoginController(DataContext context)
+        public ClientLoginController(DataContext context, IConfiguration configuration)
         {
-            _context= context;
+            _context = context;
+            _configuration = configuration;
         }
 
         [HttpGet("{id}")]
@@ -50,14 +56,40 @@ namespace DrivingSchoolAPI.Controllers
                 return Unauthorized("Nie znaleziono użytkownika.");
             }
 
-            // Sprawdzanie poprawności hasła
-            if (clientLogin.ClientPassword != loginRequest.Password)
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginRequest.Password, clientLogin.ClientPassword);
+
+            if (isPasswordValid)
             {
-                return Unauthorized("Niepoprawne hasło.");
+                var token = GenerateJwtToken(clientLogin);
+                return Ok(new { message = "Zalogowano pomyślnie", token });
             }
 
-            // Zwrócenie danych logowania (lub tokenu)
-            return Ok(new { message = "Zalogowano pomyślnie", clientId = clientLogin.IdClient });
+            // Sprawdzanie poprawności hasła
+
+            return Unauthorized("Niepoprawne hasło.");
+        }
+
+        private string GenerateJwtToken(ClientLogin clientLogin)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+            new Claim(JwtRegisteredClaimNames.Sub, clientLogin.ClientEmail),
+            new Claim("clientId", clientLogin.IdClient.ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(int.Parse(_configuration["Jwt:ExpiryMinutes"])),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
