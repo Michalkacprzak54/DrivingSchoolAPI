@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DrivingSchoolAPI.Data;
 using DrivingSchoolAPI.Entities;
+using BCrypt.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DrivingSchoolAPI.Controllers
 {
@@ -23,6 +25,7 @@ namespace DrivingSchoolAPI.Controllers
 
         // GET: api/Client
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Client>>> GetClient()
         {
             var clients = await _context.Clients
@@ -101,6 +104,7 @@ namespace DrivingSchoolAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Client>> PostClient(Client client)
         {
+            var encryptedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(client.ClientLogin.ClientPassword, 10);
             var result = await _context.Database.ExecuteSqlRawAsync(
                "EXEC DodajKlient @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10",
                client.ClientFirstName,            // @p0
@@ -108,7 +112,7 @@ namespace DrivingSchoolAPI.Controllers
                client.ClientBirthDay,        // @p2
                client.ClientPhoneNumber,      // @p3
                client.ClientLogin.ClientEmail,      // @p4
-               client.ClientLogin.ClientPassword,      // @p5
+               encryptedPassword,      // @p5
                client.ZipCode.ZipCodeNumber,     // @p6
                client.City.CityName,          // @p7
                client.ClientHouseNumber,       // @p8
