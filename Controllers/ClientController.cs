@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DrivingSchoolAPI.Data;
 using DrivingSchoolAPI.Entities;
+using DrivingSchoolAPI.Dtos;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Authorization;
 
@@ -101,33 +102,69 @@ namespace DrivingSchoolAPI.Controllers
 
         // POST: api/Client
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Client>> PostClient(Client client)
-        {
-            var encryptedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(client.ClientLogin.ClientPassword, 10);
-            var result = await _context.Database.ExecuteSqlRawAsync(
-               "EXEC DodajKlient @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10",
-               client.ClientFirstName,            // @p0
-               client.ClientLastName,        // @p1
-               client.ClientBirthDay,        // @p2
-               client.ClientPhoneNumber,      // @p3
-               client.ClientLogin.ClientEmail,      // @p4
-               encryptedPassword,      // @p5
-               client.ZipCode.ZipCodeNumber,     // @p6
-               client.City.CityName,          // @p7
-               client.ClientHouseNumber,       // @p8
-               client.ClientFlatNumber,     // @p9
-               client.ClientStatus          // @p10
-           );
 
-            // Sprawdzenie wyniku wykonania procedury
-            if (result >= 0) // Jeśli procedura zakończyła się sukcesem
+
+
+        [HttpPost("Register")]
+        public async Task<ActionResult<Client>> RegisterClient([FromBody] RegisterRequest registerRequest)
+        {
+            if (registerRequest == null)
             {
-                return CreatedAtAction("GetClient", new { id = client.IdClient }, client);
+                return BadRequest("Dane rejestracji są niepoprawne.");
             }
-            else
+
+            // Sprawdzenie, czy klient z takim e-mailem już istnieje
+            var existingClient = await _context.Clients
+                .SingleOrDefaultAsync(c => c.ClientLogin.ClientEmail == registerRequest.Email);
+
+            if (existingClient != null)
             {
-                return StatusCode(500, "Błąd podczas dodawania klienta.");
+                return BadRequest("Ten adres e-mail jest już używany.");
+            }
+
+            // Szyfrowanie hasła
+            var encryptedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(registerRequest.Password, 10);
+
+            try
+            {
+                // Wykonanie procedury składowanej DodajKlient
+                var result = await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC DodajKlient @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9",
+                    registerRequest.FirstName,            // @p0
+                    registerRequest.LastName,             // @p1
+                    registerRequest.BirthDay,             // @p2
+                    registerRequest.PhoneNumber,          // @p3
+                    registerRequest.Email,                // @p4
+                    encryptedPassword,                    // @p5
+                    registerRequest.ZipCode,              // @p6
+                    registerRequest.City,                 // @p7
+                    registerRequest.HouseNumber,          // @p8
+                    registerRequest.FlatNumber           // @p9
+                );
+
+                // Sprawdzenie wyniku wykonania procedury
+                if (result >= 0) // Jeśli procedura zakończyła się sukcesem
+                {
+                    // Możesz teraz pobrać ID klienta, jeśli chcesz go zwrócić
+                    var client = await _context.Clients
+                        .FirstOrDefaultAsync(c => c.ClientLogin.ClientEmail == registerRequest.Email);
+
+                    if (client == null)
+                    {
+                        return StatusCode(500, "Błąd podczas dodawania klienta.");
+                    }
+
+                    // Zwrócenie statusu 201 z danymi nowo dodanego klienta
+                    return CreatedAtAction("GetClient", new { id = client.IdClient }, client);
+                }
+                else
+                {
+                    return StatusCode(500, "Błąd podczas dodawania klienta.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Błąd serwera: {ex.Message}");
             }
         }
 
