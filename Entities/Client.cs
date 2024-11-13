@@ -24,6 +24,8 @@ namespace DrivingSchoolAPI.Entities
         public int ClientIdZipCode { get; set; }
         [Column("id_miasto")]
         public int ClientIdCity { get; set; }
+        [Column("ulica")]
+        public string ClientStreet { get; set; }
         [Column("numer_domu")]
         public string ClientHouseNumber { get; set; }
         [Column("numer_lokalu")]

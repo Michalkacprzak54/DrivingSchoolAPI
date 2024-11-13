@@ -129,7 +129,7 @@ namespace DrivingSchoolAPI.Controllers
             {
                 // Wykonanie procedury składowanej DodajKlient
                 var result = await _context.Database.ExecuteSqlRawAsync(
-                    "EXEC DodajKlient @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9",
+                    "EXEC DodajKlient @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10",
                     registerRequest.FirstName,            // @p0
                     registerRequest.LastName,             // @p1
                     registerRequest.BirthDay,             // @p2
@@ -138,6 +138,7 @@ namespace DrivingSchoolAPI.Controllers
                     encryptedPassword,                    // @p5
                     registerRequest.ZipCode,              // @p6
                     registerRequest.City,                 // @p7
+                    registerRequest.Street,                 // @p7
                     registerRequest.HouseNumber,          // @p8
                     registerRequest.FlatNumber           // @p9
                 );
