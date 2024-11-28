@@ -52,58 +52,6 @@ namespace DrivingSchoolAPI.Controllers
             return CreatedAtAction("GetCity", new { id = city.IdCity }, city);
         }
 
-        //// PUT: api/City/5
-        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutCity(int id, City city)
-        //{
-        //    if (id != city.IdCity)
-        //    {
-        //        return BadRequest();
-        //    }
-
-        //    _context.Entry(city).State = EntityState.Modified;
-
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!CityExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    return NoContent();
-        //}
-
-        
-
-        //// DELETE: api/City/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteCity(int id)
-        //{
-        //    var city = await _context.City.FindAsync(id);
-        //    if (city == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    _context.City.Remove(city);
-        //    await _context.SaveChangesAsync();
-
-        //    return NoContent();
-        //}
-
-        //private bool CityExists(int id)
-        //{
-        //    return _context.City.Any(e => e.IdCity == id);
-        //}
+       
     }
 }
