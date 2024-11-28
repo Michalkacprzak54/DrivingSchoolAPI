@@ -9,6 +9,8 @@ using DrivingSchoolAPI.Data;
 using DrivingSchoolAPI.Entities;
 using System.Net.Sockets;
 using DrivingSchoolAPI.Dtos;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace DrivingSchoolAPI.Controllers
 {
@@ -57,59 +59,72 @@ namespace DrivingSchoolAPI.Controllers
 
         // GET: api/ClientServices/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ClientService>> GetClientService(int id)
+        public async Task<ActionResult<ClientServiceDto>> GetClientService(int id)
         {
-            var clientService = await _context.ClientServices.FindAsync(id);
+            var clientService = await _context.ClientServices
+                .Include(cs => cs.Service)
+                .Include(cs => cs.Client)
+                .ToListAsync();
 
-            if (clientService == null)
+            var clientServiceDto = clientService.Select(cs => new ClientServiceDto
             {
-                return NotFound();
-            }
+                IdClientService = cs.IdClientService,
+                Service = new ServiceDto
+                {
+                    IdService = cs.Service.IdService,
+                    ServiceName = cs.Service.ServiceName
+                },
+                Client = new ClientDto
+                {
+                    IdClient = cs.Client.IdClient,
+                    ClientFirstName = cs.Client.ClientFirstName,
+                    ClientLastName = cs.Client.ClientLastName
+                },
 
-            return clientService;
+                PurchaseDate = cs.PurchaseDate,  // Użyj PurchaseDate
+                Quantity = cs.Quantity,            // Użyj Quantity
+                Status = cs.Status                 // Użyj Status
+            }).First();
+
+            return clientServiceDto;
         }
 
-        // PUT: api/ClientServices/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutClientService(int id, ClientService clientService)
-        {
-            if (id != clientService.IdClientService)
-            {
-                return BadRequest();
-            }
 
-            _context.Entry(clientService).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ClientServiceExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
 
         // POST: api/ClientServices
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ClientService>> PostClientService(ClientService clientService)
+        public async Task<ActionResult<ClientService>> PostClientService(ClientServiceDto clientServiceDto)
         {
-            _context.ClientServices.Add(clientService);
-            await _context.SaveChangesAsync();
+            // Wywołanie procedury składowanej
+            var execSql = @"
+                EXEC DodajKlientUsluga 
+                @id_klient = @ClientId, 
+                @id_usluga = @ServiceId, 
+                @ilosc = @Quantity;";
 
-            return CreatedAtAction("GetClientService", new { id = clientService.IdClientService }, clientService);
+                        // Przygotowanie parametrów do zapytania
+            var parameters = new[]
+            {
+                new SqlParameter("@ClientId", SqlDbType.Int) { Value = clientServiceDto.Client.IdClient },
+                new SqlParameter("@ServiceId", SqlDbType.Int) { Value = clientServiceDto.Service.IdService },
+                new SqlParameter("@Quantity", SqlDbType.Int) { Value = clientServiceDto.Quantity }
+            };
+
+            try
+            {
+                await _context.Database.ExecuteSqlRawAsync(execSql, parameters);
+
+                // Zwrócenie odpowiedzi 201 Created, bez pobierania ostatniego rekordu
+                return CreatedAtAction("GetClientService", new { id = clientServiceDto.Client.IdClient }, clientServiceDto);
+            }
+            catch (Exception ex)
+            {
+                // Zwrócenie błędu, jeśli coś poszło nie tak
+                return Problem(detail: ex.Message, statusCode: 500);
+            }
         }
+
 
         // DELETE: api/ClientServices/5
         [HttpDelete("{id}")]
@@ -127,9 +142,40 @@ namespace DrivingSchoolAPI.Controllers
             return NoContent();
         }
 
-        private bool ClientServiceExists(int id)
+        private async Task<bool> ClientServiceExists(int id)
         {
-            return _context.ClientServices.Any(e => e.IdClientService == id);
+            return await _context.ClientServices.AnyAsync(e => e.IdClientService == id);
         }
+
+        // PUT: api/ClientServices/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> PutClientService(int id, ClientService clientService)
+        //{
+        //    if (id != clientService.IdClientService)
+        //    {
+        //        return BadRequest();
+        //    }
+
+        //    _context.Entry(clientService).State = EntityState.Modified;
+
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!ClientServiceExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+
+        //    return NoContent();
+        //}
     }
 }
