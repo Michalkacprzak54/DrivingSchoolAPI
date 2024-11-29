@@ -76,10 +76,10 @@ namespace DrivingSchoolAPI.Controllers
 
             var claims = new[]
             {
-            new Claim(JwtRegisteredClaimNames.Sub, clientLogin.ClientEmail),
-            new Claim("clientId", clientLogin.IdClient.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+                new Claim(JwtRegisteredClaimNames.Sub, clientLogin.ClientEmail),
+                new Claim("clientId", clientLogin.IdClient.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],

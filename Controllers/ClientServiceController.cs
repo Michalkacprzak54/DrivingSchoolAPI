@@ -11,6 +11,7 @@ using System.Net.Sockets;
 using DrivingSchoolAPI.Dtos;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using Newtonsoft.Json;
 
 namespace DrivingSchoolAPI.Controllers
 {
@@ -94,33 +95,44 @@ namespace DrivingSchoolAPI.Controllers
         // POST: api/ClientServices
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ClientService>> PostClientService(ClientServiceDto clientServiceDto)
+        public async Task<IActionResult> PostClientServices([FromBody] List<ClientServiceDto> clientServiceDtos)
         {
-            // Wywołanie procedury składowanej
-            var execSql = @"
-                EXEC DodajKlientUsluga 
-                @id_klient = @ClientId, 
-                @id_usluga = @ServiceId, 
-                @ilosc = @Quantity;";
-
-                        // Przygotowanie parametrów do zapytania
-            var parameters = new[]
+            if (clientServiceDtos == null || !clientServiceDtos.Any())
             {
-                new SqlParameter("@ClientId", SqlDbType.Int) { Value = clientServiceDto.Client.IdClient },
-                new SqlParameter("@ServiceId", SqlDbType.Int) { Value = clientServiceDto.Service.IdService },
-                new SqlParameter("@Quantity", SqlDbType.Int) { Value = clientServiceDto.Quantity }
-            };
-
+                return BadRequest("Payload is empty or invalid.");
+            }
+            foreach (var dto in clientServiceDtos)
+            {
+                Console.WriteLine($"ClientId: {dto.Client?.IdClient}, ServiceId: {dto.Service?.IdService}, Quantity: {dto.Quantity}");
+            }
             try
             {
-                await _context.Database.ExecuteSqlRawAsync(execSql, parameters);
+                foreach (var clientServiceDto in clientServiceDtos)
+                {
+                    var execSql = @"
+                        EXEC DodajKlientUsluga 
+                        @id_klient = @ClientId, 
+                        @id_usluga = @ServiceId, 
+                        @ilosc = @Quantity;";
 
-                // Zwrócenie odpowiedzi 201 Created, bez pobierania ostatniego rekordu
-                return CreatedAtAction("GetClientService", new { id = clientServiceDto.Client.IdClient }, clientServiceDto);
+                    var resultMessage = new SqlParameter("@resultMessage", SqlDbType.NVarChar, 4000) { Direction = ParameterDirection.Output };
+                    var parameters = new[]
+                    {
+                        new SqlParameter("@ClientId", SqlDbType.Int) { Value = clientServiceDto.Client.IdClient },
+                        new SqlParameter("@ServiceId", SqlDbType.Int) { Value = clientServiceDto.Service.IdService },
+                        new SqlParameter("@Quantity", SqlDbType.Int) { Value = clientServiceDto.Quantity },
+                        resultMessage
+                    };
+
+                    await _context.Database.ExecuteSqlRawAsync(execSql, parameters);
+
+                    Console.WriteLine(resultMessage.Value);
+                }
+
+                return Ok("All client services have been added successfully.");
             }
             catch (Exception ex)
             {
-                // Zwrócenie błędu, jeśli coś poszło nie tak
                 return Problem(detail: ex.Message, statusCode: 500);
             }
         }
