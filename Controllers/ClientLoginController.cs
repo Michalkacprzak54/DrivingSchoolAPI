@@ -51,6 +51,8 @@ namespace DrivingSchoolAPI.Controllers
             var clientLogin = await _context.ClientLogins
                 .FirstOrDefaultAsync(cl => cl.ClientEmail == loginRequest.Email);
 
+            var userId = clientLogin.IdClient;
+
             if (clientLogin == null)
             {
                 return Unauthorized("Nie znaleziono użytkownika.");
@@ -61,7 +63,11 @@ namespace DrivingSchoolAPI.Controllers
             if (isPasswordValid)
             {
                 var token = GenerateJwtToken(clientLogin);
-                return Ok(new { message = "Zalogowano pomyślnie", token });
+                return Ok(new 
+                { message = "Zalogowano pomyślnie",
+                  token,
+                  userId
+                });
             }
 
             // Sprawdzanie poprawności hasła
