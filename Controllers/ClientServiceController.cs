@@ -60,7 +60,7 @@ namespace DrivingSchoolAPI.Controllers
 
         // GET: api/ClientServices/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ClientServiceDto>> GetClientService(int id)
+        public async Task<ActionResult<IEnumerable<ClientServiceDto>>> GetClientService(int id)
         {
             var clientService = await _context.ClientServices
                 .Include(cs => cs.Service)
@@ -85,7 +85,7 @@ namespace DrivingSchoolAPI.Controllers
                 PurchaseDate = cs.PurchaseDate,  // Użyj PurchaseDate
                 Quantity = cs.Quantity,            // Użyj Quantity
                 Status = cs.Status                 // Użyj Status
-            }).First();
+            }).Where(cs => cs.Client.IdClient == id).ToList();
 
             return clientServiceDto;
         }
