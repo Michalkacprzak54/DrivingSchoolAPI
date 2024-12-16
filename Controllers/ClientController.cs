@@ -122,8 +122,7 @@ namespace DrivingSchoolAPI.Controllers
                 return BadRequest("Ten adres e-mail jest już używany.");
             }
 
-            // Szyfrowanie hasła
-            var encryptedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(registerRequest.Password, 10);
+            string encryptedPassword = BCrypt.Net.BCrypt.HashPassword(registerRequest.Password);
 
             try
             {
