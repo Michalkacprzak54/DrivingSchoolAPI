@@ -34,6 +34,7 @@ namespace DrivingSchoolAPI.Data
         public DbSet<LecturePresence> LecturePresences { get; set; }
         public DbSet<Pratice> Pratices { get; set; }
         public DbSet<PraticeSchedule> PraticeSchedules { get; set; }
+        public DbSet<Photo> Photos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -133,6 +134,10 @@ namespace DrivingSchoolAPI.Data
             modelBuilder.Entity<PraticeSchedule>()
                .ToTable("harmonogram_praktyka")
                .HasKey(p => p.IdPraticeSchedule);
+
+            modelBuilder.Entity<Photo>()
+               .ToTable("zdjecie")
+               .HasKey(p => p.IdPhoto);
 
             ///////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////
@@ -234,6 +239,11 @@ namespace DrivingSchoolAPI.Data
                 .HasOne(tc => tc.CourseDetails)
                 .WithOne(cd => cd.TraineeCourse)
                 .HasForeignKey<CourseDetails>(cd => cd.IdTraineeCourse);
+
+            modelBuilder.Entity<Service>()
+                .HasMany(s => s.Photos)
+                .WithOne(p => p.Servcie)
+                .HasForeignKey(p => p.IdService);
 
             
 

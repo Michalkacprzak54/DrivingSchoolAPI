@@ -32,7 +32,9 @@ namespace DrivingSchoolAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Service>> GetService(int id)
         {
-            var service = await _context.Services.FindAsync(id);
+            var service = await _context.Services
+                .Include(s => s.Photos)
+                .FirstAsync(s => s.IdService == id);
 
             if (service == null)
             {
