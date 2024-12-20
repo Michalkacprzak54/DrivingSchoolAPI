@@ -50,9 +50,10 @@ namespace DrivingSchoolAPI.Controllers
                     ClientLastName = cs.Client.ClientLastName
                 },
                 
-                PurchaseDate = cs.PurchaseDate,  // Użyj PurchaseDate
-                Quantity = cs.Quantity,            // Użyj Quantity
-                Status = cs.Status                 // Użyj Status
+                PurchaseDate = cs.PurchaseDate,  
+                Quantity = cs.Quantity,            
+                Status = cs.Status,                 
+                Notes = cs.Notes
             }).ToList();
 
             return Ok(clientServiceDtos);
@@ -82,9 +83,10 @@ namespace DrivingSchoolAPI.Controllers
                     ClientLastName = cs.Client.ClientLastName
                 },
 
-                PurchaseDate = cs.PurchaseDate,  // Użyj PurchaseDate
-                Quantity = cs.Quantity,            // Użyj Quantity
-                Status = cs.Status                 // Użyj Status
+                PurchaseDate = cs.PurchaseDate,  
+                Quantity = cs.Quantity,            
+                Status = cs.Status,
+                Notes = cs.Notes
             }).Where(cs => cs.Client.IdClient == id).ToList();
 
             return clientServiceDto;
@@ -113,7 +115,8 @@ namespace DrivingSchoolAPI.Controllers
                         EXEC DodajKlientUsluga 
                         @id_klient = @ClientId, 
                         @id_usluga = @ServiceId, 
-                        @ilosc = @Quantity;";
+                        @ilosc = @Quantity,
+                        @uwagi = @Notes;";
 
                     var resultMessage = new SqlParameter("@resultMessage", SqlDbType.NVarChar, 4000) { Direction = ParameterDirection.Output };
                     var parameters = new[]
@@ -121,6 +124,7 @@ namespace DrivingSchoolAPI.Controllers
                         new SqlParameter("@ClientId", SqlDbType.Int) { Value = clientServiceDto.Client.IdClient },
                         new SqlParameter("@ServiceId", SqlDbType.Int) { Value = clientServiceDto.Service.IdService },
                         new SqlParameter("@Quantity", SqlDbType.Int) { Value = clientServiceDto.Quantity },
+                        new SqlParameter("@Notes", SqlDbType.Text) { Value = clientServiceDto.Notes},
                         resultMessage
                     };
 

@@ -22,6 +22,11 @@ namespace DrivingSchoolAPI.Entities
         [Column("stan")]
         public string Status { get; set; }
 
+        [Column("uwagi")]
+        public string? Notes { get; set; }
+
+
+
         // Używaj właściwości Client i Service bez prefixów
         public Client Client { get; set; }
         public Service Service { get; set; }

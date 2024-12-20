@@ -23,6 +23,9 @@ namespace DrivingSchoolAPI.Entities
         [Column("badania_lekarskie")]
         public bool MedicalCheck { get; set; }
 
+        [Column("uwagi")]
+        public string? Notes { get; set; }
+
         public Client Client { get; set; }
         public Service Service { get; set; }
         public Status Status { get; set; }
