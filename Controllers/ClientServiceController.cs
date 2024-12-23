@@ -94,6 +94,44 @@ namespace DrivingSchoolAPI.Controllers
             return clientServiceDto;
         }
 
+        [HttpGet("service/{id}")]
+        public async Task<ActionResult<ClientServiceDto>> GetClientServiceById(int id)
+        {
+            var clientService = await _context.ClientServices
+                .Include(cs => cs.Service)
+                .Include(cs => cs.Client)
+                .FirstOrDefaultAsync(cs => cs.IdClientService == id);
+
+            if (clientService == null)
+            {
+                return NotFound();
+            }
+
+            var clientServiceDto = new ClientServiceDto
+            {
+                IdClientService = clientService.IdClientService,
+                Service = new ServiceDto
+                {
+                    IdService = clientService.Service.IdService,
+                    ServiceName = clientService.Service.ServiceName
+                },
+                Client = new ClientDto
+                {
+                    IdClient = clientService.Client.IdClient,
+                    ClientFirstName = clientService.Client.ClientFirstName,
+                    ClientLastName = clientService.Client.ClientLastName
+                },
+                PurchaseDate = clientService.PurchaseDate,
+                Quantity = clientService.Quantity,
+                Status = clientService.Status,
+                Notes = clientService.Notes,
+                IsUsed = clientService.IsUsed
+            };
+
+            return clientServiceDto;
+        }
+
+
 
 
         // POST: api/ClientServices
