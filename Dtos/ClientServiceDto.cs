@@ -9,6 +9,7 @@
         public int Quantity { get; set; }
         public string? Status { get; set; }
         public string? Notes { get; set; }
+        public bool IsUsed { get; set; }
     }
 
 }

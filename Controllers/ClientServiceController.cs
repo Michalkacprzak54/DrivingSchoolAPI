@@ -53,7 +53,8 @@ namespace DrivingSchoolAPI.Controllers
                 PurchaseDate = cs.PurchaseDate,  
                 Quantity = cs.Quantity,            
                 Status = cs.Status,                 
-                Notes = cs.Notes
+                Notes = cs.Notes,
+                IsUsed = cs.IsUsed
             }).ToList();
 
             return Ok(clientServiceDtos);
@@ -86,7 +87,8 @@ namespace DrivingSchoolAPI.Controllers
                 PurchaseDate = cs.PurchaseDate,  
                 Quantity = cs.Quantity,            
                 Status = cs.Status,
-                Notes = cs.Notes
+                Notes = cs.Notes,
+                IsUsed = cs.IsUsed
             }).Where(cs => cs.Client.IdClient == id).ToList();
 
             return clientServiceDto;

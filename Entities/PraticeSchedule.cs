@@ -15,6 +15,10 @@ namespace DrivingSchoolAPI.Entities
         [Column("godzina_rozpoczęcia")]
         public TimeOnly StartDate{ get; set; }    
         [Column("godzina_zakończenia")]
-        public TimeOnly EndDate{ get; set; }    
+        public TimeOnly EndDate{ get; set; }
+
+        [Column("czy_aktualne")]
+        public bool is_Available { get; set; }
+
     }
 }

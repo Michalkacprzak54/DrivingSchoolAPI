@@ -25,6 +25,9 @@ namespace DrivingSchoolAPI.Entities
         [Column("uwagi")]
         public string? Notes { get; set; }
 
+        [Column("czy_wykorzystana")]
+        public bool IsUsed { get; set; }
+
 
 
         // Używaj właściwości Client i Service bez prefixów
