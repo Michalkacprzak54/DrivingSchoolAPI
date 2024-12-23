@@ -54,7 +54,8 @@ namespace DrivingSchoolAPI.Controllers
                 Quantity = cs.Quantity,            
                 Status = cs.Status,                 
                 Notes = cs.Notes,
-                IsUsed = cs.IsUsed
+                IsUsed = cs.IsUsed,
+                HowManyUsed = cs.HowManyUsed
             }).ToList();
 
             return Ok(clientServiceDtos);
@@ -88,7 +89,8 @@ namespace DrivingSchoolAPI.Controllers
                 Quantity = cs.Quantity,            
                 Status = cs.Status,
                 Notes = cs.Notes,
-                IsUsed = cs.IsUsed
+                IsUsed = cs.IsUsed,
+                HowManyUsed = cs.HowManyUsed
             }).Where(cs => cs.Client.IdClient == id).ToList();
 
             return clientServiceDto;
@@ -125,7 +127,8 @@ namespace DrivingSchoolAPI.Controllers
                 Quantity = clientService.Quantity,
                 Status = clientService.Status,
                 Notes = clientService.Notes,
-                IsUsed = clientService.IsUsed
+                IsUsed = clientService.IsUsed,
+                HowManyUsed = clientService.HowManyUsed
             };
 
             return clientServiceDto;

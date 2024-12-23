@@ -10,6 +10,7 @@
         public string? Status { get; set; }
         public string? Notes { get; set; }
         public bool IsUsed { get; set; }
+        public int HowManyUsed { get; set; }
     }
 
 }

@@ -28,6 +28,9 @@ namespace DrivingSchoolAPI.Entities
         [Column("czy_wykorzystana")]
         public bool IsUsed { get; set; }
 
+        [Column("ile_wykorzystane")]
+        public int HowManyUsed{ get; set; }
+
 
 
         // Używaj właściwości Client i Service bez prefixów
