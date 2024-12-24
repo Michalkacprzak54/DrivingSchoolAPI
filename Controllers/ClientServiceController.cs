@@ -76,7 +76,8 @@ namespace DrivingSchoolAPI.Controllers
                 Service = new ServiceDto
                 {
                     IdService = cs.Service.IdService,
-                    ServiceName = cs.Service.ServiceName
+                    ServiceName = cs.Service.ServiceName,
+                    ServiceType = cs.Service.ServiceType
                 },
                 Client = new ClientDto
                 {
@@ -115,7 +116,8 @@ namespace DrivingSchoolAPI.Controllers
                 Service = new ServiceDto
                 {
                     IdService = clientService.Service.IdService,
-                    ServiceName = clientService.Service.ServiceName
+                    ServiceName = clientService.Service.ServiceName,
+                    ServiceType = clientService.Service.ServiceType
                 },
                 Client = new ClientDto
                 {
