@@ -9,11 +9,11 @@ namespace DrivingSchoolAPI.Dtos
         public ClientDto? Client { get; set; }
         public ServiceDto? Service { get; set; }
         public DateOnly StartDate { get; set; }
-        public DateOnly EndDate { get; set; }
-        public string Status { get; set; }
-        public decimal PESEL { get; set; }
-        public string PKK { get; set; }
-        public bool MedicalCheck { get; set; }
+        public DateOnly? EndDate { get; set; }
+        public StatusDto? Status { get; set; }
+        public decimal? PESEL { get; set; }
+        public string? PKK { get; set; }
+        public bool? MedicalCheck { get; set; }
         public string? Notes { get; set; }
     }
 }

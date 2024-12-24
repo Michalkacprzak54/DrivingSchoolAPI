@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using DrivingSchoolAPI.Data;
 using DrivingSchoolAPI.Entities;
 using DrivingSchoolAPI.Dtos;
+using Microsoft.Data.SqlClient;
+using System.Data;
+using Newtonsoft.Json;
 
 namespace DrivingSchoolAPI.Controllers
 {
@@ -44,9 +47,12 @@ namespace DrivingSchoolAPI.Controllers
                         IdService = tc.Service.IdService,
                         ServiceName = tc.Service.ServiceName
                     },
+                    Status = new StatusDto
+                    {
+                        IdStatus = tc.Status.IdStatus
+                    },
                     StartDate = tc.StartDate,
                     EndDate = tc.EndDate,
-                    Status = tc.Status.StatusName,
                     PESEL = tc.PESEL,
                     PKK = tc.PKK,
                     MedicalCheck = tc.MedicalCheck,
@@ -87,9 +93,12 @@ namespace DrivingSchoolAPI.Controllers
                     IdService = traineeCourse.Service.IdService,
                     ServiceName = traineeCourse.Service.ServiceName
                 },
+                Status = new StatusDto
+                {
+                    IdStatus = traineeCourse.Status.IdStatus
+                },
                 StartDate = traineeCourse.StartDate,
                 EndDate = traineeCourse.EndDate,
-                Status = traineeCourse.Status.StatusName,
                 PESEL = traineeCourse.PESEL,
                 PKK = traineeCourse.PKK,
                 MedicalCheck = traineeCourse.MedicalCheck,
@@ -98,6 +107,71 @@ namespace DrivingSchoolAPI.Controllers
 
             return Ok(traineeCourseDto);
         }
+
+        [HttpPost]
+        public async Task<ActionResult<TraineeCourseDto>> PostTraineeCourse([FromBody] TraineeCourseDto createTraineeCourseDto)
+        {
+            Console.WriteLine($"Otrzymane dane: {JsonConvert.SerializeObject(createTraineeCourseDto)}");  // Zaloguj dane
+            if (createTraineeCourseDto == null || createTraineeCourseDto.Client == null)
+            {
+                return BadRequest("Payload is empty or invalid.");
+            }
+            var dto = createTraineeCourseDto;
+            
+            Console.WriteLine($"ClientId: {dto.Client?.IdClient}, ServiceId: {dto.Service?.IdService}, Quantity: {dto.StartDate}");
+            
+
+            try
+            {
+                // Tworzymy parametr wyjściowy na komunikat
+                var resultMessage = new SqlParameter("@resultMessage", SqlDbType.NVarChar, 4000) { Direction = ParameterDirection.Output };
+
+                // Definiujemy parametry wejściowe dla procedury składowanej
+                var parameters = new[]
+                {
+                    new SqlParameter("@IdClient", SqlDbType.Int) { Value = createTraineeCourseDto.Client.IdClient},
+                    new SqlParameter("@IdService", SqlDbType.Int) { Value = createTraineeCourseDto.Service.IdService},
+                    new SqlParameter("@StartDate", SqlDbType.Date) { Value = createTraineeCourseDto.StartDate },
+                    new SqlParameter("@EndDate", SqlDbType.Date) { Value = createTraineeCourseDto.EndDate ?? (object)DBNull.Value},
+                    new SqlParameter("@IdStatus", SqlDbType.Int) { Value = createTraineeCourseDto.Status.IdStatus},
+                    new SqlParameter("@PESEL", SqlDbType.NVarChar, 11) { Value = createTraineeCourseDto.PESEL},
+                    new SqlParameter("@PKK", SqlDbType.NVarChar, 26) { Value = createTraineeCourseDto.PKK},
+                    new SqlParameter("@MedicalCheck", SqlDbType.Bit) { Value = createTraineeCourseDto.MedicalCheck},
+                    new SqlParameter("@Notes", SqlDbType.Text) { Value = createTraineeCourseDto.Notes ?? (object)DBNull.Value },
+                    resultMessage
+                };
+
+                // Wykonujemy procedurę składowaną
+                var execSql = @"
+                    EXEC DodajKursantKurs 
+                        @IdClient, 
+                        @IdService, 
+                        @StartDate, 
+                        @EndDate, 
+                        @IdStatus, 
+                        @PESEL, 
+                        @PKK, 
+                        @MedicalCheck, 
+                        @Notes, 
+                        @resultMessage OUTPUT;";
+
+                // Wywołujemy procedurę składowaną
+                await _context.Database.ExecuteSqlRawAsync(execSql, parameters);
+
+                // Możesz logować komunikat wynikowy
+                Console.WriteLine($"Result: {resultMessage.Value}");
+
+                // Jeśli procedura zakończyła się sukcesem, zwracamy wynik
+                return Ok(new { Message = resultMessage.Value });
+            }
+            catch (Exception ex)
+            {
+                // Obsługujemy wyjątki
+                return Problem(detail: ex.Message, statusCode: 500);
+            }
+        }
+
+
 
         // PUT: api/TraineeCourse/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -128,17 +202,6 @@ namespace DrivingSchoolAPI.Controllers
             }
 
             return NoContent();
-        }
-
-        // POST: api/TraineeCourse
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<TraineeCourse>> PostTraineeCourse(TraineeCourse traineeCourse)
-        {
-            _context.TraineeCourses.Add(traineeCourse);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetTraineeCourse", new { id = traineeCourse.IdTraineeCourse }, traineeCourse);
         }
 
         // DELETE: api/TraineeCourse/5
