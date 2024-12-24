@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DrivingSchoolAPI.Data;
 using DrivingSchoolAPI.Entities;
+using DrivingSchoolAPI.Dtos;
 
 namespace DrivingSchoolAPI.Controllers
 {
@@ -23,34 +24,79 @@ namespace DrivingSchoolAPI.Controllers
 
         // GET: api/TraineeCourse
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TraineeCourse>>> GetTraineeCourses()
+        public async Task<ActionResult<IEnumerable<TraineeCourseDto>>> GetTraineeCourses()
         {
-            var TraineeCourses = await _context.TraineeCourses
+            var traineeCourses = await _context.TraineeCourses
                 .Include(tc => tc.Client)
                 .Include(tc => tc.Service)
                 .Include(tc => tc.Status)
+                .Select(tc => new TraineeCourseDto
+                {
+                    IdTraineeCourse = tc.IdTraineeCourse,
+                    Client = new ClientDto
+                    {
+                        IdClient = tc.Client.IdClient,
+                        ClientFirstName = tc.Client.ClientFirstName,
+                        ClientLastName = tc.Client.ClientLastName
+                    },
+                    Service = new ServiceDto
+                    {
+                        IdService = tc.Service.IdService,
+                        ServiceName = tc.Service.ServiceName
+                    },
+                    StartDate = tc.StartDate,
+                    EndDate = tc.EndDate,
+                    Status = tc.Status.StatusName,
+                    PESEL = tc.PESEL,
+                    PKK = tc.PKK,
+                    MedicalCheck = tc.MedicalCheck,
+                    Notes = tc.Notes
+                })
                 .ToListAsync();
 
-            return Ok(TraineeCourses);
+            return Ok(traineeCourses);
         }
+
 
         // GET: api/TraineeCourse/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TraineeCourse>> GetTraineeCourse(int id)
+        public async Task<ActionResult<TraineeCourseDto>> GetTraineeCourseById(int id)
         {
             var traineeCourse = await _context.TraineeCourses
                 .Include(tc => tc.Client)
                 .Include(tc => tc.Service)
                 .Include(tc => tc.Status)
-                .Include(tc => tc.CourseDetails)
-                .FirstOrDefaultAsync(i => i.IdClient == id);
+                .FirstOrDefaultAsync(tc => tc.IdTraineeCourse == id);
 
             if (traineeCourse == null)
             {
                 return NotFound();
             }
 
-            return traineeCourse;
+            var traineeCourseDto = new TraineeCourseDto
+            {
+                IdTraineeCourse = traineeCourse.IdTraineeCourse,
+                Client = new ClientDto
+                {
+                    IdClient = traineeCourse.Client.IdClient,
+                    ClientFirstName = traineeCourse.Client.ClientFirstName,
+                    ClientLastName = traineeCourse.Client.ClientLastName
+                },
+                Service = new ServiceDto
+                {
+                    IdService = traineeCourse.Service.IdService,
+                    ServiceName = traineeCourse.Service.ServiceName
+                },
+                StartDate = traineeCourse.StartDate,
+                EndDate = traineeCourse.EndDate,
+                Status = traineeCourse.Status.StatusName,
+                PESEL = traineeCourse.PESEL,
+                PKK = traineeCourse.PKK,
+                MedicalCheck = traineeCourse.MedicalCheck,
+                Notes = traineeCourse.Notes
+            };
+
+            return Ok(traineeCourseDto);
         }
 
         // PUT: api/TraineeCourse/5
