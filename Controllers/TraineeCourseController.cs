@@ -31,7 +31,7 @@ namespace DrivingSchoolAPI.Controllers
         {
             var traineeCourses = await _context.TraineeCourses
                 .Include(tc => tc.Client)
-                .Include(tc => tc.Service)
+                .Include(tc => tc.ClientService)
                 .Include(tc => tc.Status)
                 .Select(tc => new TraineeCourseDto
                 {
@@ -42,10 +42,9 @@ namespace DrivingSchoolAPI.Controllers
                         ClientFirstName = tc.Client.ClientFirstName,
                         ClientLastName = tc.Client.ClientLastName
                     },
-                    Service = new ServiceDto
+                    ClientService = new ClientServiceDto
                     {
-                        IdService = tc.Service.IdService,
-                        ServiceName = tc.Service.ServiceName
+                        IdClientService = tc.ClientService.IdClientService
                     },
                     Status = new StatusDto
                     {
@@ -70,7 +69,7 @@ namespace DrivingSchoolAPI.Controllers
         {
             var traineeCourse = await _context.TraineeCourses
                 .Include(tc => tc.Client)
-                .Include(tc => tc.Service)
+                .Include(tc => tc.ClientService)
                 .Include(tc => tc.Status)
                 .FirstOrDefaultAsync(tc => tc.IdTraineeCourse == id);
 
@@ -88,10 +87,9 @@ namespace DrivingSchoolAPI.Controllers
                     ClientFirstName = traineeCourse.Client.ClientFirstName,
                     ClientLastName = traineeCourse.Client.ClientLastName
                 },
-                Service = new ServiceDto
+                ClientService = new ClientServiceDto
                 {
-                    IdService = traineeCourse.Service.IdService,
-                    ServiceName = traineeCourse.Service.ServiceName
+                    IdClientService = traineeCourse.ClientService.IdClientService
                 },
                 Status = new StatusDto
                 {
@@ -118,7 +116,7 @@ namespace DrivingSchoolAPI.Controllers
             }
             var dto = createTraineeCourseDto;
             
-            Console.WriteLine($"ClientId: {dto.Client?.IdClient}, ServiceId: {dto.Service?.IdService}, Quantity: {dto.StartDate}");
+            Console.WriteLine($"ClientId: {dto.Client?.IdClient}, ServiceId: {dto.ClientService?.IdClientService}, Quantity: {dto.StartDate}");
             
 
             try
@@ -130,7 +128,7 @@ namespace DrivingSchoolAPI.Controllers
                 var parameters = new[]
                 {
                     new SqlParameter("@IdClient", SqlDbType.Int) { Value = createTraineeCourseDto.Client.IdClient},
-                    new SqlParameter("@IdService", SqlDbType.Int) { Value = createTraineeCourseDto.Service.IdService},
+                    new SqlParameter("@IdClientService", SqlDbType.Int) { Value = createTraineeCourseDto.ClientService.IdClientService},
                     new SqlParameter("@StartDate", SqlDbType.Date) { Value = createTraineeCourseDto.StartDate },
                     new SqlParameter("@EndDate", SqlDbType.Date) { Value = createTraineeCourseDto.EndDate ?? (object)DBNull.Value},
                     new SqlParameter("@IdStatus", SqlDbType.Int) { Value = createTraineeCourseDto.Status.IdStatus},
@@ -145,7 +143,7 @@ namespace DrivingSchoolAPI.Controllers
                 var execSql = @"
                     EXEC DodajKursantKurs 
                         @IdClient, 
-                        @IdService, 
+                        @IdClientService, 
                         @StartDate, 
                         @EndDate, 
                         @IdStatus, 

@@ -197,13 +197,21 @@ namespace DrivingSchoolAPI.Data
 
             modelBuilder.Entity<TraineeCourse>()
                 .HasOne(tc => tc.Client)
-                .WithOne(c => c.TraineeCourse)
-                .HasForeignKey<TraineeCourse>(tc => tc.IdClient);
+                .WithMany()
+                .HasForeignKey(tc => tc.IdClient)
+                .HasConstraintName("FK_kursant_kurs_klient");
 
             modelBuilder.Entity<TraineeCourse>()
-                .HasOne(tc => tc.Service)
-                .WithOne(s => s.TraineeCourse)
-                .HasForeignKey<TraineeCourse>(tc => tc.IdService);
+                .HasOne(tc => tc.ClientService)
+                .WithMany()
+                .HasForeignKey(tc => tc.IdClientService)
+                .HasConstraintName("FK_kursant_kurs_klient_usluga");
+
+            modelBuilder.Entity<TraineeCourse>()
+                .HasOne(tc => tc.CourseDetails)
+                .WithOne(cd => cd.TraineeCourse)
+                .HasForeignKey<CourseDetails>(cd => cd.IdTraineeCourse)
+                .HasConstraintName("FK_szczegoly_kurs_kursant_kurs");
 
             modelBuilder.Entity<TraineeCourse>()
                 .HasOne(tc => tc.Status)
@@ -235,10 +243,7 @@ namespace DrivingSchoolAPI.Data
                 .WithOne(p => p.Invoice)
                 .HasForeignKey(p => p.IdInvoice);
 
-            modelBuilder.Entity<TraineeCourse>()
-                .HasOne(tc => tc.CourseDetails)
-                .WithOne(cd => cd.TraineeCourse)
-                .HasForeignKey<CourseDetails>(cd => cd.IdTraineeCourse);
+            
 
             modelBuilder.Entity<Service>()
                 .HasMany(s => s.Photos)

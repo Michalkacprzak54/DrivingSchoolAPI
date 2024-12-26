@@ -7,7 +7,7 @@ namespace DrivingSchoolAPI.Dtos
     {
         public int IdTraineeCourse { get; set; }
         public ClientDto? Client { get; set; }
-        public ServiceDto? Service { get; set; }
+        public ClientServiceDto? ClientService { get; set; }
         public DateOnly StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public StatusDto? Status { get; set; }
