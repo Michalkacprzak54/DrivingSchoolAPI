@@ -15,5 +15,6 @@ namespace DrivingSchoolAPI.Dtos
         public string? PKK { get; set; }
         public bool? MedicalCheck { get; set; }
         public string? Notes { get; set; }
+        public DateTime? PurchaseDate { get; set; }
     }
 }

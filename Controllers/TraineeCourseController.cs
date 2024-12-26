@@ -111,14 +111,14 @@ namespace DrivingSchoolAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<TraineeCourseDto>> PostTraineeCourse([FromBody] TraineeCourseDto createTraineeCourseDto)
         {
-            Console.WriteLine($"Otrzymane dane: {JsonConvert.SerializeObject(createTraineeCourseDto)}");  // Zaloguj dane
+            //Console.WriteLine($"Otrzymane dane: {JsonConvert.SerializeObject(createTraineeCourseDto)}");  // Zaloguj dane
             if (createTraineeCourseDto == null || createTraineeCourseDto.Client == null)
             {
                 return BadRequest("Payload is empty or invalid.");
             }
             var dto = createTraineeCourseDto;
             
-            Console.WriteLine($"ClientId: {dto.Client?.IdClient}, ServiceId: {dto.Service?.IdService}, Quantity: {dto.StartDate}");
+            //Console.WriteLine($"ClientId: {dto.Client?.IdClient}, ServiceId: {dto.Service?.IdService}, Quantity: {dto.StartDate}");
             
 
             try
@@ -137,7 +137,8 @@ namespace DrivingSchoolAPI.Controllers
                     new SqlParameter("@PESEL", SqlDbType.NVarChar, 11) { Value = createTraineeCourseDto.PESEL},
                     new SqlParameter("@PKK", SqlDbType.NVarChar, 26) { Value = createTraineeCourseDto.PKK},
                     new SqlParameter("@MedicalCheck", SqlDbType.Bit) { Value = createTraineeCourseDto.MedicalCheck},
-                    new SqlParameter("@Notes", SqlDbType.Text) { Value = createTraineeCourseDto.Notes ?? (object)DBNull.Value },
+                    new SqlParameter("@Notes", SqlDbType.Text) { Value = createTraineeCourseDto.Notes ?? (object)DBNull.Value},
+                    new SqlParameter("@PurchaseDate", SqlDbType.DateTime) { Value = createTraineeCourseDto.PurchaseDate},
                     resultMessage
                 };
 
@@ -153,6 +154,7 @@ namespace DrivingSchoolAPI.Controllers
                         @PKK, 
                         @MedicalCheck, 
                         @Notes, 
+                        @PurchaseDate, 
                         @resultMessage OUTPUT;";
 
                 // Wywołujemy procedurę składowaną
