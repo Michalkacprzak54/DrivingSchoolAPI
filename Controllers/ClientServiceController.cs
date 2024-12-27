@@ -161,6 +161,7 @@ namespace DrivingSchoolAPI.Controllers
                         @id_klient = @ClientId, 
                         @id_usluga = @ServiceId, 
                         @ilosc = @Quantity,
+                        @data_zakupu = @PurchaseDate,
                         @uwagi = @Notes;";
 
                     var resultMessage = new SqlParameter("@resultMessage", SqlDbType.NVarChar, 4000) { Direction = ParameterDirection.Output };
@@ -169,6 +170,7 @@ namespace DrivingSchoolAPI.Controllers
                         new SqlParameter("@ClientId", SqlDbType.Int) { Value = clientServiceDto.Client.IdClient },
                         new SqlParameter("@ServiceId", SqlDbType.Int) { Value = clientServiceDto.Service.IdService },
                         new SqlParameter("@Quantity", SqlDbType.Int) { Value = clientServiceDto.Quantity },
+                        new SqlParameter("@PurchaseDate", SqlDbType.DateTime) { Value = clientServiceDto.PurchaseDate },
                         new SqlParameter("@Notes", SqlDbType.Text) { Value = clientServiceDto.Notes},
                         resultMessage
                     };
