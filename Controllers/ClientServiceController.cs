@@ -41,7 +41,9 @@ namespace DrivingSchoolAPI.Controllers
                 Service = new ServiceDto
                 {
                     IdService = cs.Service.IdService,
-                    ServiceName = cs.Service.ServiceName
+                    ServiceName = cs.Service.ServiceName,
+                    ServiceType = cs.Service.ServiceType,
+                    ServicePlace = cs.Service.ServicePlace
                 },
                 Client = new ClientDto
                 {
@@ -55,7 +57,14 @@ namespace DrivingSchoolAPI.Controllers
                 Status = cs.Status,                 
                 Notes = cs.Notes,
                 IsUsed = cs.IsUsed,
-                HowManyUsed = cs.HowManyUsed
+                HowManyUsed = cs.HowManyUsed,
+                BasicPractice = cs.BasicPractice,
+                ExtendedPractice = cs.ExtendedPractice,
+                OnlineTheory = cs.OnlineTheory,
+                StationaryTheory = cs.StationaryTheory,
+                TheoryCompleted = cs.TheoryCompleted,
+                Manual = cs.Manual,
+                Automatic = cs.Automatic
             }).ToList();
 
             return Ok(clientServiceDtos);
@@ -77,7 +86,8 @@ namespace DrivingSchoolAPI.Controllers
                 {
                     IdService = cs.Service.IdService,
                     ServiceName = cs.Service.ServiceName,
-                    ServiceType = cs.Service.ServiceType
+                    ServiceType = cs.Service.ServiceType,
+                    ServicePlace = cs.Service.ServicePlace
                 },
                 Client = new ClientDto
                 {
@@ -91,7 +101,14 @@ namespace DrivingSchoolAPI.Controllers
                 Status = cs.Status,
                 Notes = cs.Notes,
                 IsUsed = cs.IsUsed,
-                HowManyUsed = cs.HowManyUsed
+                HowManyUsed = cs.HowManyUsed,
+                BasicPractice = cs.BasicPractice,
+                ExtendedPractice = cs.ExtendedPractice,
+                OnlineTheory = cs.OnlineTheory,
+                StationaryTheory = cs.StationaryTheory,
+                TheoryCompleted = cs.TheoryCompleted,
+                Manual = cs.Manual,
+                Automatic = cs.Automatic
             }).Where(cs => cs.Client.IdClient == id).ToList();
 
             return clientServiceDto;
@@ -117,7 +134,8 @@ namespace DrivingSchoolAPI.Controllers
                 {
                     IdService = clientService.Service.IdService,
                     ServiceName = clientService.Service.ServiceName,
-                    ServiceType = clientService.Service.ServiceType
+                    ServiceType = clientService.Service.ServiceType,
+                    ServicePlace = clientService.Service.ServicePlace
                 },
                 Client = new ClientDto
                 {
@@ -130,7 +148,14 @@ namespace DrivingSchoolAPI.Controllers
                 Status = clientService.Status,
                 Notes = clientService.Notes,
                 IsUsed = clientService.IsUsed,
-                HowManyUsed = clientService.HowManyUsed
+                HowManyUsed = clientService.HowManyUsed,
+                BasicPractice = clientService.BasicPractice,
+                ExtendedPractice = clientService.ExtendedPractice,
+                OnlineTheory = clientService.OnlineTheory,
+                StationaryTheory = clientService.StationaryTheory,
+                TheoryCompleted = clientService.TheoryCompleted,
+                Manual = clientService.Manual,
+                Automatic = clientService.Automatic
             };
 
             return clientServiceDto;
@@ -162,22 +187,33 @@ namespace DrivingSchoolAPI.Controllers
                         @id_usluga = @ServiceId, 
                         @ilosc = @Quantity,
                         @data_zakupu = @PurchaseDate,
-                        @uwagi = @Notes;";
+                        @uwagi = @Notes,
+                        @podstawowa_praktyka = @BasicPractice,
+                        @rozszerzona_praktyka = @ExtendedPractice,
+                        @online_teoria = @OnlineTheory,
+                        @stacjonarnie_teoria = @StationaryTheory,
+                        @zaliczona_teoria = @TheoryCompleted,
+                        @manual = @Manual,
+                        @automat = @Automatic;";
 
-                    var resultMessage = new SqlParameter("@resultMessage", SqlDbType.NVarChar, 4000) { Direction = ParameterDirection.Output };
                     var parameters = new[]
                     {
                         new SqlParameter("@ClientId", SqlDbType.Int) { Value = clientServiceDto.Client.IdClient },
                         new SqlParameter("@ServiceId", SqlDbType.Int) { Value = clientServiceDto.Service.IdService },
                         new SqlParameter("@Quantity", SqlDbType.Int) { Value = clientServiceDto.Quantity },
                         new SqlParameter("@PurchaseDate", SqlDbType.DateTime) { Value = clientServiceDto.PurchaseDate },
-                        new SqlParameter("@Notes", SqlDbType.Text) { Value = clientServiceDto.Notes},
-                        resultMessage
+                        new SqlParameter("@Notes", SqlDbType.Text) { Value = (object?)clientServiceDto.Notes ?? DBNull.Value },
+                        new SqlParameter("@BasicPractice", SqlDbType.Bit) { Value = (object?)clientServiceDto.BasicPractice ?? DBNull.Value },
+                        new SqlParameter("@ExtendedPractice", SqlDbType.Bit) { Value = (object?)clientServiceDto.ExtendedPractice ?? DBNull.Value },
+                        new SqlParameter("@OnlineTheory", SqlDbType.Bit) { Value = (object?)clientServiceDto.OnlineTheory ?? DBNull.Value },
+                        new SqlParameter("@StationaryTheory", SqlDbType.Bit) { Value = (object?)clientServiceDto.StationaryTheory ?? DBNull.Value },
+                        new SqlParameter("@TheoryCompleted", SqlDbType.Bit) { Value = (object?)clientServiceDto.TheoryCompleted ?? DBNull.Value },
+                        new SqlParameter("@Manual", SqlDbType.Bit) { Value = (object?)clientServiceDto.Manual ?? DBNull.Value },
+                        new SqlParameter("@Automatic", SqlDbType.Bit) { Value = (object?)clientServiceDto.Automatic?? DBNull.Value }
                     };
 
                     await _context.Database.ExecuteSqlRawAsync(execSql, parameters);
 
-                    Console.WriteLine(resultMessage.Value);
                 }
 
                 return Ok("All client services have been added successfully.");

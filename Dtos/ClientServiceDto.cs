@@ -11,6 +11,13 @@
         public string? Notes { get; set; }
         public bool IsUsed { get; set; }
         public int HowManyUsed { get; set; }
+        public bool? BasicPractice { get; set; }
+        public bool? ExtendedPractice { get; set; }
+        public bool? OnlineTheory { get; set; }
+        public bool? StationaryTheory { get; set; }
+        public bool? TheoryCompleted { get; set; }
+        public bool? Manual { get; set; }
+        public bool? Automatic { get; set; }
     }
 
 }
