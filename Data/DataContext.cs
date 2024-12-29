@@ -35,6 +35,7 @@ namespace DrivingSchoolAPI.Data
         public DbSet<Pratice> Pratices { get; set; }
         public DbSet<PraticeSchedule> PraticeSchedules { get; set; }
         public DbSet<Photo> Photos { get; set; }
+        public DbSet<ContactRequest> ContactRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -138,6 +139,10 @@ namespace DrivingSchoolAPI.Data
             modelBuilder.Entity<Photo>()
                .ToTable("zdjecie")
                .HasKey(p => p.IdPhoto);
+
+            modelBuilder.Entity<ContactRequest>()
+               .ToTable("zgloszenie_kontakt")
+               .HasKey(cr => cr.IdContactRequest);
 
             ///////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////
