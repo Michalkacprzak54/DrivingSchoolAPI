@@ -26,7 +26,6 @@ namespace DrivingSchoolAPI.Controllers
 
         // GET: api/Client
         [HttpGet]
-        [Authorize]
         public async Task<ActionResult<IEnumerable<Client>>> GetClient()
         {
             var clients = await _context.Clients
@@ -58,55 +57,74 @@ namespace DrivingSchoolAPI.Controllers
             return client;
         }
 
-        // PUT: api/Client/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutClient(int id, Client client)
-        //{
-        //    if (id != client.IdClient)
-        //    {
-        //        return BadRequest("ID w URL nie zgadza się z ID klienta.");
-        //    }
-        //    try
-        //    {
-        //        var result = await _context.Database.ExecuteSqlRawAsync(
-        //       "EXEC EdytujKlient @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9",
-        //       client.IdClient,             //@p11
-        //       client.ClientFirstName,            // @p0
-        //       client.ClientLastName,        // @p1
-        //       client.ClientBirthDay,   // @p2
-        //       client.ClientPhoneNumber,      // @p3
-        //       client.ZipCode.ZipCodeNumber,     // @p6
-        //       client.City.CityName,          // @p7
-        //       client.ClientHouseNumber,       // @p8
-        //       client.ClientFlatNumber,     // @p9
-        //       client.ClientStatus          // @p10
-        //       );
+        [HttpGet("Data/{id}")]
+        public async Task<ActionResult<Client>> GetClientData(int id)
+        {
+            var client = await _context.Clients
+                .Include(c => c.City)
+                .Include(c => c.ZipCode)
+                .Include(c => c.ClientLogin)
+                .FirstAsync();
 
-        //        // Sprawdzenie wyniku wykonania procedury
-        //        if (result >= 0) // Jeśli procedura zakończyła się sukcesem
-        //        {
-        //            return NoContent();
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, "Błąd podczas edytowania klienta.");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.ToString());
-        //        return StatusCode(500, $"Błąd serwera: {ex.Message}");
-        //    }
-        //}
+            if (client == null)
+            {
+                return NotFound();
+            }
 
-        // POST: api/Client
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+            return client;
+        }
+
+        [HttpPut("Edit/{id}")]
+        public async Task<IActionResult> EditClient(int id, [FromBody] ClientDataDto editRequest)
+        {
+            if (editRequest == null || id <= 0)
+            {
+                return BadRequest("Nieprawidłowe dane do edycji.");
+            }
+
+            try
+            {
+                // Weryfikacja, czy klient istnieje
+                var existingClient = await _context.Clients.FindAsync(id);
+                if (existingClient == null)
+                {
+                    return NotFound("Klient nie istnieje.");
+                }
+
+                // Wywołanie procedury składowanej EdytujKlient
+                var result = await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC EdytujKlient @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9",
+                    id,                                      // @p0
+                    editRequest.FirstName,                   // @p1
+                    editRequest.LastName,                    // @p2
+                    editRequest.BirthDay,                    // @p3
+                    editRequest.PhoneNumber,                 // @p4
+                    editRequest.ZipCode,                     // @p5
+                    editRequest.City,                        // @p6
+                    editRequest.Street,                      // @p7
+                    editRequest.HouseNumber,                 // @p8
+                    editRequest.FlatNumber                   // @p9
+                );
+
+                if (result >= 0)
+                {
+                    return NoContent(); // Edycja zakończona sukcesem
+                }
+                else
+                {
+                    return StatusCode(500, "Błąd podczas edycji klienta.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Błąd serwera: {ex.Message}");
+            }
+        }
 
 
 
         [HttpPost("Register")]
-        public async Task<ActionResult<Client>> RegisterClient([FromBody] RegisterRequest registerRequest)
+        public async Task<ActionResult<Client>> RegisterClient([FromBody] ClientDataDto registerRequest)
         {
             if (registerRequest == null)
             {
