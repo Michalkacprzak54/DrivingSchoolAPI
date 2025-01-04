@@ -196,8 +196,11 @@ namespace DrivingSchoolAPI.Controllers
                 return NotFound();
             }
 
-            _context.Clients.Remove(client);
-            await _context.SaveChangesAsync();
+            // Wywołanie procedury składowanej, aby zaktualizować powiązane rekordy
+            var sql = "EXEC UsunKlient @id_klient = {0}";
+            await _context.Database.ExecuteSqlRawAsync(sql, id);
+
+        
 
             return NoContent();
         }
