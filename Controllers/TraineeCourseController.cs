@@ -33,6 +33,7 @@ namespace DrivingSchoolAPI.Controllers
                 .Include(tc => tc.Client)
                 .Include(tc => tc.Service)
                 .Include(tc => tc.Status)
+                .Include(tc => tc.CourseDetails)  // Dołącz CourseDetails
                 .Select(tc => new TraineeCourseDto
                 {
                     IdTraineeCourse = tc.IdTraineeCourse,
@@ -56,9 +57,17 @@ namespace DrivingSchoolAPI.Controllers
                     PESEL = tc.PESEL,
                     PKK = tc.PKK,
                     MedicalCheck = tc.MedicalCheck,
-                    Notes = tc.Notes
-                })
-                .ToListAsync();
+                    Notes = tc.Notes,
+                    CourseDetails = new CourseDetailsDto
+                    {
+                        IdCourseDetails = tc.CourseDetails.IdCourseDetails,
+                        TheoryHoursCount = tc.CourseDetails.TheoryHoursCount,
+                        PraticeHoursCount = tc.CourseDetails.PraticeHoursCount,
+                        InternalExam = tc.CourseDetails.InternalExam,
+                        CreationDate = tc.CourseDetails.CreationDate,
+                        Notes = tc.CourseDetails.Notes
+                    }
+                }).ToListAsync();
 
             return Ok(traineeCourses);
         }
@@ -68,44 +77,48 @@ namespace DrivingSchoolAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TraineeCourseDto>> GetTraineeCourseById(int id)
         {
-            var traineeCourse = await _context.TraineeCourses
-                .Include(tc => tc.Client)
-                .Include(tc => tc.Service)
-                .Include(tc => tc.Status)
-                .FirstOrDefaultAsync(tc => tc.IdTraineeCourse == id);
+            var traineeCourses = await _context.TraineeCourses
+                .Where(tc => tc.Client.IdClient == id)  
+               .Include(tc => tc.Client)
+               .Include(tc => tc.Service)
+               .Include(tc => tc.Status)
+               .Include(tc => tc.CourseDetails)  
+               .Select(tc => new TraineeCourseDto
+               {
+                   IdTraineeCourse = tc.IdTraineeCourse,
+                   Client = new ClientDto
+                   {
+                       IdClient = tc.Client.IdClient,
+                       ClientFirstName = tc.Client.ClientFirstName,
+                       ClientLastName = tc.Client.ClientLastName
+                   },
+                   Service = new ServiceDto
+                   {
+                       IdService = tc.Service.IdService,
+                       ServiceName = tc.Service.ServiceName
+                   },
+                   Status = new StatusDto
+                   {
+                       IdStatus = tc.Status.IdStatus
+                   },
+                   StartDate = tc.StartDate,
+                   EndDate = tc.EndDate,
+                   PESEL = tc.PESEL,
+                   PKK = tc.PKK,
+                   MedicalCheck = tc.MedicalCheck,
+                   Notes = tc.Notes,
+                   CourseDetails = new CourseDetailsDto
+                   {
+                       IdCourseDetails = tc.CourseDetails.IdCourseDetails,
+                       TheoryHoursCount = tc.CourseDetails.TheoryHoursCount,
+                       PraticeHoursCount = tc.CourseDetails.PraticeHoursCount,
+                       InternalExam = tc.CourseDetails.InternalExam,
+                       CreationDate = tc.CourseDetails.CreationDate,
+                       Notes = tc.CourseDetails.Notes
+                   }
+               }).ToListAsync();
 
-            if (traineeCourse == null)
-            {
-                return NotFound();
-            }
-
-            var traineeCourseDto = new TraineeCourseDto
-            {
-                IdTraineeCourse = traineeCourse.IdTraineeCourse,
-                Client = new ClientDto
-                {
-                    IdClient = traineeCourse.Client.IdClient,
-                    ClientFirstName = traineeCourse.Client.ClientFirstName,
-                    ClientLastName = traineeCourse.Client.ClientLastName
-                },
-                Service = new ServiceDto
-                {
-                    IdService = traineeCourse.Service.IdService,
-                    ServiceName = traineeCourse.Service.ServiceName
-                },
-                Status = new StatusDto
-                {
-                    IdStatus = traineeCourse.Status.IdStatus
-                },
-                StartDate = traineeCourse.StartDate,
-                EndDate = traineeCourse.EndDate,
-                PESEL = traineeCourse.PESEL,
-                PKK = traineeCourse.PKK,
-                MedicalCheck = traineeCourse.MedicalCheck,
-                Notes = traineeCourse.Notes
-            };
-
-            return Ok(traineeCourseDto);
+            return Ok(traineeCourses);
         }
 
         [HttpPost]

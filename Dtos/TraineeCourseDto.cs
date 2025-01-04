@@ -16,5 +16,6 @@ namespace DrivingSchoolAPI.Dtos
         public bool? MedicalCheck { get; set; }
         public string? Notes { get; set; }
         public DateTime? PurchaseDate { get; set; }
+        public CourseDetailsDto? CourseDetails { get; set; }
     }
 }
