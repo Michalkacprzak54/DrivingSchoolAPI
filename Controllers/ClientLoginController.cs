@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using DrivingSchoolAPI.Dtos;
 
 namespace DrivingSchoolAPI.Controllers
 {
@@ -73,6 +74,24 @@ namespace DrivingSchoolAPI.Controllers
             // Sprawdzanie poprawności hasła
 
             return Unauthorized("Niepoprawne hasło.");
+        }
+
+        [HttpPut("ChangePassword/{id}")]
+        public IActionResult ChangePassword(int id, [FromBody] ChangePasswordDto dto)
+        {
+            var clientLogin = _context.ClientLogins.FirstOrDefault(cl => cl.IdClient == id);
+            if (clientLogin == null)
+                return NotFound("Użytkownik nie istnieje.");
+
+            // Sprawdzenie poprawności starego hasła
+            if (!BCrypt.Net.BCrypt.Verify(dto.OldPassword, clientLogin.ClientPassword))
+                return BadRequest("Stare hasło jest nieprawidłowe.");
+
+            // Aktualizacja hasła
+            clientLogin.ClientPassword = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+            _context.SaveChanges();
+
+            return Ok("Hasło zostało zmienione.");
         }
 
         private string GenerateJwtToken(ClientLogin clientLogin)
