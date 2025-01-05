@@ -25,7 +25,9 @@ namespace DrivingSchoolAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PraticeSchedule>>> GetPraticeSchedules()
         {
-            return await _context.PraticeSchedules.ToListAsync();
+            return await _context.PraticeSchedules
+                .Include(ps => ps.Instructor)
+                .ToListAsync();
         }
 
         // GET: api/PraticeSchedules/5

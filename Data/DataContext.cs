@@ -174,6 +174,11 @@ namespace DrivingSchoolAPI.Data
                 .WithMany()
                 .HasForeignKey(cs => cs.ServiceId);
 
+            modelBuilder.Entity<PraticeSchedule>()
+                .HasOne(ps => ps.Instructor)
+                .WithMany()
+                .HasForeignKey(ps => ps.IdInstructor);
+
             modelBuilder.Entity<Instructor>()
                 .HasOne(i => i.InstructorDetails)
                 .WithOne(d => d.Instructor)
