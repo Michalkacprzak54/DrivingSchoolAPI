@@ -78,10 +78,26 @@ namespace DrivingSchoolAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Pratice>> PostPratice(Pratice pratice)
         {
-            _context.Pratices.Add(pratice);
-            await _context.SaveChangesAsync();
+            if (!ModelState.IsValid)
+            {
+                // Jeśli model nie jest poprawny, zwracamy odpowiedź z błędami walidacji
+                return BadRequest(ModelState);
+            }
 
-            return CreatedAtAction("GetPratice", new { id = pratice.IdPratice }, pratice);
+            try
+            {
+                _context.Pratices.Add(pratice);
+                await _context.SaveChangesAsync();
+
+                // Zwracamy status 201 Created z informacjami o nowo utworzonym zasobie
+                return CreatedAtAction("GetPratice", new { id = pratice.IdPratice }, pratice);
+            }
+            catch (Exception ex)
+            {
+                // Logujemy błąd i zwracamy odpowiedź serwera 500
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(500, "Wystąpił błąd podczas zapisywania danych.");
+            }
         }
 
         // DELETE: api/Pratices/5
