@@ -30,16 +30,16 @@ namespace DrivingSchoolAPI.Controllers
 
         // GET: api/Pratices/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Pratice>> GetPratice(int id)
+        public async Task<ActionResult<IEnumerable<Pratice>>> GetPratice(int id)
         {
-            var pratice = await _context.Pratices.FindAsync(id);
+            var userPratice = await _context.Pratices.Where(p => p.IdCourseDetails == id).ToListAsync();
 
-            if (pratice == null)
+            if (userPratice == null)
             {
                 return NotFound();
             }
 
-            return pratice;
+            return Ok(userPratice);
         }
 
         // PUT: api/Pratices/5
