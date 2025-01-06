@@ -24,8 +24,8 @@ namespace DrivingSchoolAPI.Entities
         [Column("nr_lokalu")]
         public int? InstructorFlatNumber { get; set; }
 
-        [JsonIgnore]
-        public Instructor Instructor { get; set; }
+
+        public Instructor? Instructor { get; set; }
         public City City { get; set; }
         public ZipCode ZipCode { get; set; }
 

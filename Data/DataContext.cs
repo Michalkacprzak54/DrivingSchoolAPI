@@ -179,11 +179,6 @@ namespace DrivingSchoolAPI.Data
                 .WithMany()
                 .HasForeignKey(ps => ps.IdInstructor);
 
-            modelBuilder.Entity<Instructor>()
-                .HasOne(i => i.InstructorDetails)
-                .WithOne(d => d.Instructor)
-                .HasForeignKey<InstructorDetails>(d => d.IdInstructor)
-                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Instructor>()
                 .HasMany(i => i.InstructorEntitlements)
@@ -199,6 +194,11 @@ namespace DrivingSchoolAPI.Data
                 .HasOne(id => id.City)
                 .WithMany()
                 .HasForeignKey(id => id.InstructorCityId);
+
+            modelBuilder.Entity<InstructorDetails>()
+                .HasOne(id => id.Instructor)
+                .WithOne(i => i.InstructorDetails)  
+                .HasForeignKey<InstructorDetails>(id => id.IdInstructor);
 
             modelBuilder.Entity<InstructorDetails>()
                 .HasOne(id => id.ZipCode)

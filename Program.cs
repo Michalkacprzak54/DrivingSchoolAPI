@@ -46,6 +46,7 @@ namespace DrivingSchoolAPI
             {
                 //options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
                 options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+                
             });
 
             builder.Services.AddDbContext<DataContext>(options =>
