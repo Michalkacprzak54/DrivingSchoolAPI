@@ -80,21 +80,26 @@ namespace DrivingSchoolAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Jeśli model nie jest poprawny, zwracamy odpowiedź z błędami walidacji
                 return BadRequest(ModelState);
             }
 
             try
             {
-                _context.Pratices.Add(pratice);
-                await _context.SaveChangesAsync();
+                // Wywołanie procedury składowanej
+                await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC AddPraticeAndUpdateSchedule @IdHarmonogram = {0}, @IdSzczegoly = {1}, @DataRezerwacji = {2}, @IdStatus = {3}",
+                    pratice.IdPraticeSchedule,
+                    pratice.IdCourseDetails,
+                    pratice.ReservationDate,
+                    pratice.IdStatus
+                );
 
-                // Zwracamy status 201 Created z informacjami o nowo utworzonym zasobie
+                // Możesz zwrócić odpowiedź z danymi, jeśli chcesz
                 return CreatedAtAction("GetPratice", new { id = pratice.IdPratice }, pratice);
             }
             catch (Exception ex)
             {
-                // Logujemy błąd i zwracamy odpowiedź serwera 500
+                // Logowanie błędu i zwrócenie odpowiedzi 500
                 Console.WriteLine($"Error: {ex.Message}");
                 return StatusCode(500, "Wystąpił błąd podczas zapisywania danych.");
             }
