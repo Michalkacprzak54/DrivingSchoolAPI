@@ -63,11 +63,13 @@ namespace DrivingSchoolAPI.Controllers
 
             if (isPasswordValid)
             {
+                string role = "user";
                 var token = GenerateJwtToken(clientLogin);
                 return Ok(new 
                 { message = "Zalogowano pomyślnie",
                   token,
-                  userId
+                  userId,
+                  role
                 });
             }
 
@@ -103,7 +105,8 @@ namespace DrivingSchoolAPI.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, clientLogin.ClientEmail),
                 new Claim("clientId", clientLogin.IdClient.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("role", "user")
             };
 
             var token = new JwtSecurityToken(

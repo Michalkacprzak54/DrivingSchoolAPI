@@ -73,17 +73,20 @@ namespace DrivingSchoolAPI.Controllers
 
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginRequest.Password, instructorLogin.InstructorPassword);
 
-
+            
             if (isPasswordValid)
             {
+                string role = "instructor";
                 var instructorId = instructorLogin.IdInstructor;
                 var token = GenerateJwtToken(instructorLogin);
                 return Ok(new
                 {
                     message = "Zalogowano pomyślnie",
                     token,
-                    instructorId
-                });
+                    instructorId,
+                    role
+                    
+            });
             }
 
             // Sprawdzanie poprawności hasła
@@ -106,7 +109,7 @@ namespace DrivingSchoolAPI.Controllers
                 new Claim(JwtRegisteredClaimNames.Sub, instructorDetails.Instructor.InstructorEmail),
                 new Claim("instructorId", instructorDetails.IdInstructor.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("role", "instructor")  // Dodanie roli instruktora
+                
             };
 
             var token = new JwtSecurityToken(
