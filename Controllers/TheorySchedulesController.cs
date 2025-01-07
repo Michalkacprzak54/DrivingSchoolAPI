@@ -29,17 +29,17 @@ namespace DrivingSchoolAPI.Controllers
         }
 
         // GET: api/TheorySchedules/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<TheorySchedule>> GetTheorySchedule(int id)
+        [HttpGet("{idInstructor}")]
+        public async Task<ActionResult<TheorySchedule>> GetTheorySchedule(int idInstructor)
         {
-            var theorySchedule = await _context.TheorySchedules.FindAsync(id);
+            var theorySchedule = await _context.TheorySchedules.Where(ts => ts.IdInsctructor == idInstructor).ToListAsync();
 
             if (theorySchedule == null)
             {
                 return NotFound();
             }
 
-            return theorySchedule;
+            return Ok(theorySchedule);
         }
 
         // PUT: api/TheorySchedules/5
