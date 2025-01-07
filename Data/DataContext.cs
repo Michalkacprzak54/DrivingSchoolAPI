@@ -13,7 +13,6 @@ namespace DrivingSchoolAPI.Data
         public DbSet<City> Cities{ get; set; }
         public DbSet<ZipCode> ZipCodes{ get; set; }
         public DbSet<Status> Statuses{ get; set; }
-        public DbSet<Entitlement> Entitlements{ get; set; }
 
 
         public DbSet<Client> Clients { get; set; }
@@ -29,7 +28,6 @@ namespace DrivingSchoolAPI.Data
         public DbSet<InvoiceItem> InvocieItems { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<CourseDetails> CourseDetails { get; set; }
-        public DbSet<InscrutorEntitlement> InscrutorEntitlements { get; set; }
         public DbSet<TheorySchedule> TheorySchedules { get; set; }
         public DbSet<LecturePresence> LecturePresences { get; set; }
         public DbSet<Pratice> Pratices { get; set; }
@@ -55,10 +53,6 @@ namespace DrivingSchoolAPI.Data
             modelBuilder.Entity<ZipCode>()
                 .ToTable("kod_pocztowy")
                 .HasKey(z => z.IdZipCode);
-
-            modelBuilder.Entity<Entitlement>()
-                .ToTable("uprawnienia")
-                .HasKey(z => z.IdEntitlement);
 
             ///////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////
@@ -115,10 +109,6 @@ namespace DrivingSchoolAPI.Data
             modelBuilder.Entity<CourseDetails>()
                 .ToTable("szczegoly_kurs")
                 .HasKey(cd => cd.IdCourseDetails);
-
-            modelBuilder.Entity<InscrutorEntitlement>()
-                .ToTable("instruktor_uprawnienie")
-                .HasKey(cd => cd.IdInscrutorEntitlement);
 
             modelBuilder.Entity<TheorySchedule>()
                 .ToTable("harmonogram_wyklad")
@@ -179,16 +169,6 @@ namespace DrivingSchoolAPI.Data
                 .WithMany()
                 .HasForeignKey(ps => ps.IdInstructor);
 
-
-            modelBuilder.Entity<Instructor>()
-                .HasMany(i => i.InstructorEntitlements)
-                .WithOne(ie => ie.Instructor)
-                .HasForeignKey(ie => ie.IdInstructor);
-
-            modelBuilder.Entity<InscrutorEntitlement>()
-                .HasOne(ie => ie.Entitlement)
-                .WithMany(e => e.InstructorEntitlements)
-                .HasForeignKey(ie => ie.IdEntitlement);
 
             modelBuilder.Entity<InstructorDetails>()
                 .HasOne(id => id.City)
