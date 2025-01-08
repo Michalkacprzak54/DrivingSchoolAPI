@@ -181,13 +181,13 @@ namespace DrivingSchoolAPI.Controllers
                 {
                     return NotFound("Instruktor nie istnieje.");
                 }
-
+                string newPassword = BCrypt.Net.BCrypt.HashPassword(editRequest.InstructorPassword); 
                 // Wywołanie procedury składowanej EdytujKlient
                 var result = await _context.Database.ExecuteSqlRawAsync(
                     "EXEC AktualizujInstruktor @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7,@p8",
                     id,                                      
-                    editRequest.InstructorEmail,                   
-                    editRequest.InstructorPassword,                    
+                    editRequest.InstructorEmail,
+                    newPassword,                    
                     editRequest.InstructorStreet,                    
                     editRequest.InstructorHouseNumber,                 
                     editRequest.InstructorFlatNumber,                     
