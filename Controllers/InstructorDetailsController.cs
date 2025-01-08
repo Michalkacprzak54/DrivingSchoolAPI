@@ -97,6 +97,35 @@ namespace DrivingSchoolAPI.Controllers
             return Unauthorized("Niepoprawne hasło.");
         }
 
+        private string GenerateJwtToken(InstructorDetails instructorDetails)
+        {
+
+            if (instructorDetails?.Instructor == null)
+            {
+                throw new ArgumentException("Instructor details are incomplete. Instructor information is missing.");
+            }
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, instructorDetails.Instructor.InstructorEmail),
+                new Claim("instructorId", instructorDetails.IdInstructor.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(int.Parse(_configuration["Jwt:ExpiryMinutes"])),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
         [HttpPost("schedule")]
         public async Task<IActionResult> AddSchedule([FromBody] ScheduleRequest scheduleRequest)
         {
@@ -135,34 +164,53 @@ namespace DrivingSchoolAPI.Controllers
                 return Problem(detail: ex.Message, statusCode: 500);
             }
         }
-        private string GenerateJwtToken(InstructorDetails instructorDetails)
+
+        [HttpPut("Edit/{id}")]
+        public async Task<IActionResult> EditClient(int id, [FromBody] InstructorDetailsDto editRequest)
         {
-
-            if(instructorDetails?.Instructor == null)
+            if (editRequest == null || id <= 0)
             {
-                throw new ArgumentException("Instructor details are incomplete. Instructor information is missing.");
+                return BadRequest("Nieprawidłowe dane do edycji.");
             }
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            try
             {
-                new Claim(JwtRegisteredClaimNames.Sub, instructorDetails.Instructor.InstructorEmail),
-                new Claim("instructorId", instructorDetails.IdInstructor.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                
-            };
+                // Weryfikacja, czy klient istnieje
+                var existingClient = await _context.Instructors.FindAsync(id);
+                if (existingClient == null)
+                {
+                    return NotFound("Instruktor nie istnieje.");
+                }
 
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(int.Parse(_configuration["Jwt:ExpiryMinutes"])),
-                signingCredentials: credentials
-            );
+                // Wywołanie procedury składowanej EdytujKlient
+                var result = await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC AktualizujInstruktor @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7,@p8",
+                    id,                                      
+                    editRequest.InstructorEmail,                   
+                    editRequest.InstructorPassword,                    
+                    editRequest.InstructorStreet,                    
+                    editRequest.InstructorHouseNumber,                 
+                    editRequest.InstructorFlatNumber,                     
+                    editRequest.InstructorPhoneNumber,                
+                    editRequest.InstructorCity,         
+                    editRequest.InstructorZipCode
+                );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+                if (result >= 0)
+                {
+                    return NoContent(); // Edycja zakończona sukcesem
+                }
+                else
+                {
+                    return StatusCode(500, "Błąd podczas edycji instruktora.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Błąd serwera: {ex.Message}");
+            }
         }
+
 
     }
 }
