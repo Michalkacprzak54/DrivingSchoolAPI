@@ -7,6 +7,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using DrivingSchoolAPI.Dtos;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 
 namespace DrivingSchoolAPI.Controllers
@@ -94,6 +97,44 @@ namespace DrivingSchoolAPI.Controllers
             return Unauthorized("Niepoprawne hasło.");
         }
 
+        [HttpPost("schedule")]
+        public async Task<IActionResult> AddSchedule([FromBody] ScheduleRequest scheduleRequest)
+        {
+            if(scheduleRequest == null)
+            {
+                return BadRequest("Payload is empty or invalid.");
+            }
+            try
+            {
+                var execSql = @"
+                        EXEC AddHarmonogram 
+                        @id_instruktor = @InstructorId, 
+                        @data_poczatkowa = @StartDate, 
+                        @data_koncowa = @EndDate, 
+                        @godzina_rozpoczecia = @StartTime, 
+                        @godzina_zakonczenia = @EndTime, 
+                        @grupa = @Group,
+                        @typ = @Type";
+
+                var parameters = new[]
+                {
+                        new SqlParameter("@InstructorId", SqlDbType.Int) { Value = scheduleRequest.InstructorId },
+                        new SqlParameter("@StartDate", SqlDbType.Date) { Value = scheduleRequest.StartDate },
+                        new SqlParameter("@EndDate", SqlDbType.Date) { Value = scheduleRequest.EndDate },
+                        new SqlParameter("@StartTime", SqlDbType.Time) { Value = scheduleRequest.StartTime },
+                        new SqlParameter("@EndTime", SqlDbType.Time) { Value = scheduleRequest.EndTime },
+                        new SqlParameter("@Group", SqlDbType.NVarChar) { Value = (object?)scheduleRequest.Group ?? DBNull.Value },
+                        new SqlParameter("@Type", SqlDbType.NVarChar) { Value = scheduleRequest.Type }
+                    };
+
+                await _context.Database.ExecuteSqlRawAsync(execSql, parameters);
+                return Ok("Schedule added successfully.");
+            }
+            catch (Exception ex)
+            {
+                return Problem(detail: ex.Message, statusCode: 500);
+            }
+        }
         private string GenerateJwtToken(InstructorDetails instructorDetails)
         {
 
