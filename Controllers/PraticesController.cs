@@ -105,6 +105,37 @@ namespace DrivingSchoolAPI.Controllers
             }
         }
 
+        [HttpPut("Edit/{id}")]
+        public async Task<IActionResult> UpdatePratice(int id, [FromBody] Pratice Pratice)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                // Wywołanie procedury składowanej
+                await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC UpdatePraktyka @IdPraktyka = {0}, @NewDataPraktyk = {1}, @NewGodzinaRozpoczecia = {2}, @NewGodzinaZakonczenia = {3}, @NewIdStatus = {4}",
+                    id,
+                    Pratice.PraticeDate,
+                    Pratice.StartHour,
+                    Pratice.EndHour,
+                    Pratice.IdStatus
+                );
+
+                return NoContent(); // 204 No Content, jeśli operacja się powiedzie
+            }
+            catch (Exception ex)
+            {
+                // Logowanie błędu i zwrócenie odpowiedzi 500
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(500, "Wystąpił błąd podczas aktualizacji danych.");
+            }
+        }
+
+
         // DELETE: api/Pratices/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePratice(int id)
