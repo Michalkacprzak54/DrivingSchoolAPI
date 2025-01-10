@@ -33,12 +33,15 @@ namespace DrivingSchoolAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<InscrutorEntitlement>> GetInscrutorEntitlement(int id)
         {
-            var inscrutorEntitlement = await _context.InscrutorEntitlements.FindAsync(id);
+            var inscrutorEntitlement = 
+                await _context.InscrutorEntitlements
+                .Include(ie => ie.Entitlement)
+                .Where(ie => ie.IdInstructor == id).ToListAsync();
             if (inscrutorEntitlement == null)
             {
                 return NotFound();
             }
-            return inscrutorEntitlement;
+            return Ok(inscrutorEntitlement);
         }
         // PUT: api/InscrutorEntitlements/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
