@@ -15,6 +15,9 @@ namespace DrivingSchoolAPI.Entities
 
         [Column("numer_telefonu")]
         public string? Phone { get; set; }
+        
+        [Column("data_kontakt")]
+        public DateTime? ContactDate { get; set; }
 
         [Column("tresc_wiadomosci")]
         public string Message { get; set; }

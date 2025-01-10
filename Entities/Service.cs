@@ -22,7 +22,6 @@ namespace DrivingSchoolAPI.Entities
         public string ServicePlace { get; set; }
 
         public TraineeCourse TraineeCourse { get; set; }
-        public ServicePromotion ServicePromotion { get; set; }
 
         public ICollection<Photo> Photos { get; set; }
     }

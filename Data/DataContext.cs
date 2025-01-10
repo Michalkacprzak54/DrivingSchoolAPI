@@ -13,12 +13,13 @@ namespace DrivingSchoolAPI.Data
         public DbSet<City> Cities{ get; set; }
         public DbSet<ZipCode> ZipCodes{ get; set; }
         public DbSet<Status> Statuses{ get; set; }
+        public DbSet<Entitlement> Entitlements { get; set; }
 
 
         public DbSet<Client> Clients { get; set; }
         public DbSet<ClientLogin> ClientLogins { get; set; }
-        public DbSet<Promotion> Promotions { get; set; }
-        public DbSet<ServicePromotion> ServicePromotions { get; set; }
+        
+        public DbSet<InscrutorEntitlement> InscrutorEntitlements { get; set; }
         public DbSet<Service> Services{ get; set; }
         public DbSet<ClientService> ClientServices{ get; set; }
         public DbSet<Instructor> Instructors{ get; set; }
@@ -54,6 +55,10 @@ namespace DrivingSchoolAPI.Data
                 .ToTable("kod_pocztowy")
                 .HasKey(z => z.IdZipCode);
 
+            modelBuilder.Entity<Entitlement>()
+                .ToTable("uprawnienie")
+                .HasKey(p => p.IdEntitlement);
+
             ///////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////
@@ -86,13 +91,12 @@ namespace DrivingSchoolAPI.Data
                 .ToTable("kursant_kurs")
                 .HasKey(tc => tc.IdTraineeCourse);
 
-            modelBuilder.Entity<Promotion>()
-                .ToTable("promocja")
-                .HasKey(p => p.IdPromotion);
+            
 
-            modelBuilder.Entity<ServicePromotion>()
-                .ToTable("usluga_promocja")
-                .HasKey(p => p.IdServicePromotion);
+            modelBuilder.Entity<InscrutorEntitlement>()
+                .ToTable("instruktor_uprawnienie")
+                .HasKey(p => p.IdInscrutorEntitlement);
+
 
             modelBuilder.Entity<Invoice>()
                 .ToTable("faktura")
@@ -205,15 +209,15 @@ namespace DrivingSchoolAPI.Data
                 .WithMany()
                 .HasForeignKey(tc => tc.IdStatus);
 
-            modelBuilder.Entity<ServicePromotion>()
-                .HasOne(sp => sp.Service)
-                .WithOne(s => s.ServicePromotion)
-                .HasForeignKey<ServicePromotion>(sp => sp.IdService);
+            modelBuilder.Entity<Instructor>()
+                .HasMany(i => i.InstructorEntitlements)
+                .WithOne(ie => ie.Instructor)
+                .HasForeignKey(ie => ie.IdInstructor);
 
-            modelBuilder.Entity<ServicePromotion>()
-                .HasOne(sp => sp.Promotion)
-                .WithOne(p => p.ServicePromotion)
-                .HasForeignKey<ServicePromotion>(sp => sp.IdPromotion);
+            modelBuilder.Entity<InscrutorEntitlement>()
+                .HasOne(ie => ie.Entitlement)
+                .WithMany(e => e.InstructorEntitlements)
+                .HasForeignKey(ie => ie.IdEntitlement);
 
             modelBuilder.Entity<Invoice>()
                 .HasOne(i => i.Client)
