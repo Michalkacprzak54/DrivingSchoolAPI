@@ -15,6 +15,7 @@ namespace DrivingSchoolAPI.Data
         public DbSet<Status> Statuses{ get; set; }
         public DbSet<Entitlement> Entitlements { get; set; }
 
+        public DbSet<Admin> Admins { get; set; }
 
         public DbSet<Client> Clients { get; set; }
         public DbSet<ClientLogin> ClientLogins { get; set; }
@@ -62,6 +63,10 @@ namespace DrivingSchoolAPI.Data
             ///////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////
+
+            modelBuilder.Entity<Admin>()
+                .ToTable("Administrator")
+                .HasKey(a => a.IdAdmin);
 
             modelBuilder.Entity<Client>()
                 .ToTable("klient")

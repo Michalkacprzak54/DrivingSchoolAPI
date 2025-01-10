@@ -15,7 +15,7 @@ namespace DrivingSchoolAPI.Entities
         public int IdEntitlement { get; set; }
 
         [Column("data_uprawnienie")]
-        public int DateEntitlement { get; set; }
+        public DateOnly DateEntitlement { get; set; }
         public Instructor Instructor { get; set; }
         public Entitlement Entitlement { get; set; }
     }

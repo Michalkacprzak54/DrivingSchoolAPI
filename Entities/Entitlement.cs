@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 namespace DrivingSchoolAPI.Entities
 {
     public class Entitlement
@@ -9,6 +10,7 @@ namespace DrivingSchoolAPI.Entities
         [Column("uprawnienie")]
         public string EntitlementName { get; set; }
 
+        [JsonIgnore]
         public ICollection<InscrutorEntitlement> InstructorEntitlements { get; set; }
     }
 }
