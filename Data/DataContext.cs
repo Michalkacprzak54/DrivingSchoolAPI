@@ -17,25 +17,33 @@ namespace DrivingSchoolAPI.Data
 
         public DbSet<Admin> Admins { get; set; }
 
+        public DbSet<ContactRequest> ContactRequests { get; set; }
+
         public DbSet<Client> Clients { get; set; }
         public DbSet<ClientLogin> ClientLogins { get; set; }
-        
-        public DbSet<InscrutorEntitlement> InscrutorEntitlements { get; set; }
-        public DbSet<Service> Services{ get; set; }
         public DbSet<ClientService> ClientServices{ get; set; }
+        public DbSet<ServiceSchedule> ServiceSchedules { get; set; }    
+        
+        public DbSet<Service> Services{ get; set; }
+        public DbSet<Photo> Photos { get; set; }
+
+        public DbSet<TraineeCourse> TraineeCourses { get; set; }
+
         public DbSet<Instructor> Instructors{ get; set; }
         public DbSet<InstructorDetails> InstructorDetails { get; set; }
-        public DbSet<TraineeCourse> TraineeCourses { get; set; }
+        public DbSet<InscrutorEntitlement> InscrutorEntitlements { get; set; }
+
         public DbSet<Invoice> Invocies { get; set; }
         public DbSet<InvoiceItem> InvocieItems { get; set; }
         public DbSet<Payment> Payments { get; set; }
+
         public DbSet<CourseDetails> CourseDetails { get; set; }
         public DbSet<TheorySchedule> TheorySchedules { get; set; }
         public DbSet<LecturePresence> LecturePresences { get; set; }
         public DbSet<Pratice> Pratices { get; set; }
         public DbSet<PraticeSchedule> PraticeSchedules { get; set; }
-        public DbSet<Photo> Photos { get; set; }
-        public DbSet<ContactRequest> ContactRequests { get; set; }
+        
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -75,6 +83,10 @@ namespace DrivingSchoolAPI.Data
             modelBuilder.Entity<ClientLogin>()
                 .ToTable("login_klient")
                 .HasKey(cl => cl.IdClientLogin);
+
+            modelBuilder.Entity<ServiceSchedule>()
+                .ToTable("usluga_harmonogram")
+                .HasKey(ss => ss.IdServiceSchedule);
 
             modelBuilder.Entity<Service>()
                 .ToTable("usluga")
@@ -162,6 +174,21 @@ namespace DrivingSchoolAPI.Data
                 .HasOne(c => c.ZipCode)
                 .WithMany()
                 .HasForeignKey(c => c.ClientIdZipCode);
+
+            modelBuilder.Entity<ServiceSchedule>()
+                .HasOne(ss => ss.ClientService)
+                .WithOne(cs => cs.ServiceSchedule)
+                .HasForeignKey<ServiceSchedule>(ss => ss.IdClientService);
+
+            modelBuilder.Entity<ServiceSchedule>()
+                .HasOne(ss => ss.PraticeSchedule)
+                .WithOne(ps => ps.ServiceSchedule)
+                .HasForeignKey<ServiceSchedule>(ss => ss.IdPraticeSchedule);
+
+            modelBuilder.Entity<ServiceSchedule>()
+                .HasOne(ss => ss.Status)
+                .WithOne(s => s.ServiceSchedule)
+                .HasForeignKey<ServiceSchedule>(ss => ss.IdStatus);
 
             modelBuilder.Entity<ClientService>()
                 .HasOne(cs => cs.Client)

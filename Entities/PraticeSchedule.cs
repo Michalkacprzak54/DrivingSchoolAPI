@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DrivingSchoolAPI.Entities
 {
@@ -20,6 +21,9 @@ namespace DrivingSchoolAPI.Entities
         [Column("czy_aktualne")]
         public bool is_Available { get; set; }
         public Instructor? Instructor { get; set; }
+
+        [JsonIgnore]
+        public ServiceSchedule ServiceSchedule { get; set; }
 
     }
 }

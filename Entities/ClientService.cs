@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DrivingSchoolAPI.Entities
 {
@@ -55,5 +56,10 @@ namespace DrivingSchoolAPI.Entities
         // Używaj właściwości Client i Service bez prefixów
         public Client Client { get; set; }
         public Service Service { get; set; }
+
+        [JsonIgnore]
+        public ServiceSchedule? ServiceSchedule { get; set; }   
+
+
     }
 }
