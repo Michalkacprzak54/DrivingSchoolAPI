@@ -11,18 +11,21 @@ namespace DrivingSchoolAPI.Entities
         public string ServiceName { get; set; }
         [Column("opis")]
         public string ServiceDescription { get; set; }
-        [Column("cena_netto")]
-        public decimal ServiceNetPrice { get; set; }
-        [Column("stawka_vat")]
-        public int ServiceVatRate { get; set; }
+        [Column("cena_brutto")]
+        public decimal ServicePrice { get; set; }
+
         [Column("typ_usluga")]
         public string ServiceType { get; set; }
 
         [Column("miejsce_usluga")]
         public string ServicePlace { get; set; }
 
+        [Column("kategoria")]
+        public string? Category { get; set; }
+
         public TraineeCourse TraineeCourse { get; set; }
 
+        public ICollection<VariantService> VariantServices { get; set; }
         public ICollection<Photo> Photos { get; set; }
     }
 }

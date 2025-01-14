@@ -22,6 +22,7 @@ namespace DrivingSchoolAPI.Data
         public DbSet<Client> Clients { get; set; }
         public DbSet<ClientLogin> ClientLogins { get; set; }
         public DbSet<ClientService> ClientServices{ get; set; }
+        public DbSet<VariantService> VariantServices{ get; set; }
         public DbSet<ServiceSchedule> ServiceSchedules { get; set; }    
         
         public DbSet<Service> Services{ get; set; }
@@ -91,6 +92,10 @@ namespace DrivingSchoolAPI.Data
             modelBuilder.Entity<Service>()
                 .ToTable("usluga")
                 .HasKey(s => s.IdService);
+
+            modelBuilder.Entity<VariantService>()
+               .ToTable("wariant_usluga")
+               .HasKey(s => s.IdVariantService);
 
             modelBuilder.Entity<ClientService>()
                 .ToTable("klient_usluga")
@@ -270,6 +275,11 @@ namespace DrivingSchoolAPI.Data
                 .HasOne(tc => tc.CourseDetails)
                 .WithOne(cd => cd.TraineeCourse)
                 .HasForeignKey<CourseDetails>(cd => cd.IdTraineeCourse);
+
+            modelBuilder.Entity<Service>()
+                .HasMany(s => s.VariantServices)
+                .WithOne(vs => vs.Service)
+                .HasForeignKey(s => s.IdService);
 
             modelBuilder.Entity<Service>()
                 .HasMany(s => s.Photos)

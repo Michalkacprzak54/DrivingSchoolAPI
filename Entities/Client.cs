@@ -30,8 +30,6 @@ namespace DrivingSchoolAPI.Entities
         public string ClientHouseNumber { get; set; }
         [Column("numer_lokalu")]
         public int? ClientFlatNumber { get; set; }
-        [Column("czy_kursant")]
-        public bool ClientStatus { get; set; }
 
         public ClientLogin? ClientLogin { get; set; }
         public City? City { get; set; }

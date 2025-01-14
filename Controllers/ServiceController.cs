@@ -25,7 +25,8 @@ namespace DrivingSchoolAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Service>>> GetServices()
         {
-            return await _context.Services.ToListAsync();
+            return await _context.Services
+                .ToListAsync();
         }
 
         // GET: api/Service/5
@@ -33,6 +34,7 @@ namespace DrivingSchoolAPI.Controllers
         public async Task<ActionResult<Service>> GetService(int id)
         {
             var service = await _context.Services
+                .Include(s => s.VariantServices)
                 .Include(s => s.Photos)
                 .FirstAsync(s => s.IdService == id);
 
