@@ -28,10 +28,11 @@ namespace DrivingSchoolAPI.Controllers
 
         // GET: api/ClientServices
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ClientServiceDto>>> GetClientServices()
+        public async Task<ActionResult<IEnumerable<ClientService>>> GetClientServices()
         {
             var clientServices = await _context.ClientServices
                 .Include(cs => cs.Service)
+                .Include(cs => cs.VariantService)
                 .Include(cs => cs.Client)
                 .ToListAsync();
 
@@ -51,18 +52,13 @@ namespace DrivingSchoolAPI.Controllers
                     ClientFirstName = cs.Client.ClientFirstName,
                     ClientLastName = cs.Client.ClientLastName
                 },
-                
-                PurchaseDate = cs.PurchaseDate,  
-                Quantity = cs.Quantity,            
-                Status = cs.Status,                 
+                VariantService = cs.VariantService != null ? cs.VariantService : null,
+                PurchaseDate = cs.PurchaseDate,
+                Quantity = cs.Quantity,
+                Status = cs.Status,
                 Notes = cs.Notes,
                 IsUsed = cs.IsUsed,
                 HowManyUsed = cs.HowManyUsed,
-                BasicPractice = cs.BasicPractice,
-                ExtendedPractice = cs.ExtendedPractice,
-                OnlineTheory = cs.OnlineTheory,
-                StationaryTheory = cs.StationaryTheory,
-                TheoryCompleted = cs.TheoryCompleted,
                 Manual = cs.Manual,
                 Automatic = cs.Automatic
             }).ToList();
@@ -76,6 +72,7 @@ namespace DrivingSchoolAPI.Controllers
         {
             var clientService = await _context.ClientServices
                 .Include(cs => cs.Service)
+                .Include(cs => cs.VariantService)
                 .Include(cs => cs.Client)
                 .ToListAsync();
 
@@ -95,6 +92,7 @@ namespace DrivingSchoolAPI.Controllers
                     ClientFirstName = cs.Client.ClientFirstName,
                     ClientLastName = cs.Client.ClientLastName
                 },
+                VariantService = cs.VariantService != null ? cs.VariantService : null,
 
                 PurchaseDate = cs.PurchaseDate,  
                 Quantity = cs.Quantity,            
@@ -102,11 +100,6 @@ namespace DrivingSchoolAPI.Controllers
                 Notes = cs.Notes,
                 IsUsed = cs.IsUsed,
                 HowManyUsed = cs.HowManyUsed,
-                BasicPractice = cs.BasicPractice,
-                ExtendedPractice = cs.ExtendedPractice,
-                OnlineTheory = cs.OnlineTheory,
-                StationaryTheory = cs.StationaryTheory,
-                TheoryCompleted = cs.TheoryCompleted,
                 Manual = cs.Manual,
                 Automatic = cs.Automatic
             }).Where(cs => cs.Client.IdClient == id).ToList();
@@ -119,6 +112,7 @@ namespace DrivingSchoolAPI.Controllers
         {
             var clientService = await _context.ClientServices
                 .Include(cs => cs.Service)
+                .Include(cs => cs.VariantService)
                 .Include(cs => cs.Client)
                 .FirstOrDefaultAsync(cs => cs.IdClientService == id);
 
@@ -130,7 +124,7 @@ namespace DrivingSchoolAPI.Controllers
             var clientServiceDto = new ClientServiceDto
             {
                 IdClientService = clientService.IdClientService,
-                Service = new ServiceDto
+                Service =  new ServiceDto
                 {
                     IdService = clientService.Service.IdService,
                     ServiceName = clientService.Service.ServiceName,
@@ -143,17 +137,13 @@ namespace DrivingSchoolAPI.Controllers
                     ClientFirstName = clientService.Client.ClientFirstName,
                     ClientLastName = clientService.Client.ClientLastName
                 },
+                VariantService = clientService.VariantService != null ? clientService.VariantService : null,
                 PurchaseDate = clientService.PurchaseDate,
                 Quantity = clientService.Quantity,
                 Status = clientService.Status,
                 Notes = clientService.Notes,
                 IsUsed = clientService.IsUsed,
                 HowManyUsed = clientService.HowManyUsed,
-                BasicPractice = clientService.BasicPractice,
-                ExtendedPractice = clientService.ExtendedPractice,
-                OnlineTheory = clientService.OnlineTheory,
-                StationaryTheory = clientService.StationaryTheory,
-                TheoryCompleted = clientService.TheoryCompleted,
                 Manual = clientService.Manual,
                 Automatic = clientService.Automatic
             };
@@ -190,7 +180,6 @@ namespace DrivingSchoolAPI.Controllers
                         @uwagi = @Notes,
                         @podstawowa_praktyka = @BasicPractice,
                         @rozszerzona_praktyka = @ExtendedPractice,
-                        @online_teoria = @OnlineTheory,
                         @stacjonarnie_teoria = @StationaryTheory,
                         @zaliczona_teoria = @TheoryCompleted,
                         @manual = @Manual,
@@ -205,7 +194,6 @@ namespace DrivingSchoolAPI.Controllers
                         new SqlParameter("@Notes", SqlDbType.Text) { Value = (object?)clientServiceDto.Notes ?? DBNull.Value },
                         new SqlParameter("@BasicPractice", SqlDbType.Bit) { Value = (object?)clientServiceDto.BasicPractice ?? DBNull.Value },
                         new SqlParameter("@ExtendedPractice", SqlDbType.Bit) { Value = (object?)clientServiceDto.ExtendedPractice ?? DBNull.Value },
-                        new SqlParameter("@OnlineTheory", SqlDbType.Bit) { Value = (object?)clientServiceDto.OnlineTheory ?? DBNull.Value },
                         new SqlParameter("@StationaryTheory", SqlDbType.Bit) { Value = (object?)clientServiceDto.StationaryTheory ?? DBNull.Value },
                         new SqlParameter("@TheoryCompleted", SqlDbType.Bit) { Value = (object?)clientServiceDto.TheoryCompleted ?? DBNull.Value },
                         new SqlParameter("@Manual", SqlDbType.Bit) { Value = (object?)clientServiceDto.Manual ?? DBNull.Value },
