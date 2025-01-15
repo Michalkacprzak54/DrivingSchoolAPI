@@ -6,10 +6,10 @@ namespace DrivingSchoolAPI.Entities
     public class VariantService
     {
         [Column("id_wariant_usluga")]
-        public int IdVariantService { get; set; }
+        public int? IdVariantService { get; set; }
 
         [Column("id_usluga")]
-        public int IdService { get; set; }  
+        public int? IdService { get; set; }  
         
         [Column("wariant")]
         public string? Variant { get; set; }
@@ -27,7 +27,7 @@ namespace DrivingSchoolAPI.Entities
         public bool? TheoryDone { get; set; }
 
         [JsonIgnore]
-        public Service Service { get; set; }
+        public Service? Service { get; set; }
 
     }
 }

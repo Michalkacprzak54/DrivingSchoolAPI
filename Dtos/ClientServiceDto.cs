@@ -11,8 +11,8 @@ namespace DrivingSchoolAPI.Dtos
         public DateTime? PurchaseDate { get; set; }
         public int Quantity { get; set; }
         public string? Status { get; set; }
-        public bool IsUsed { get; set; }
-        public int HowManyUsed { get; set; }
+        public bool? IsUsed { get; set; }
+        public int? HowManyUsed { get; set; }
     }
 
 }
