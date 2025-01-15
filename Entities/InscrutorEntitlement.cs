@@ -1,5 +1,4 @@
-﻿using DrivingSchoolMVC.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace DrivingSchoolAPI.Entities
 {
