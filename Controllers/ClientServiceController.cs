@@ -135,6 +135,7 @@ namespace DrivingSchoolAPI.Controllers
                 VariantService = clientService.VariantService != null ? clientService.VariantService : null,
                 PurchaseDate = clientService.PurchaseDate,
                 Quantity = clientService.Quantity,
+                Status = clientService.Status,
                 IsUsed = clientService.IsUsed,
                 HowManyUsed = clientService.HowManyUsed,
 
