@@ -56,11 +56,8 @@ namespace DrivingSchoolAPI.Controllers
                 PurchaseDate = cs.PurchaseDate,
                 Quantity = cs.Quantity,
                 Status = cs.Status,
-                Notes = cs.Notes,
                 IsUsed = cs.IsUsed,
                 HowManyUsed = cs.HowManyUsed,
-                Manual = cs.Manual,
-                Automatic = cs.Automatic
             }).ToList();
 
             return Ok(clientServiceDtos);
@@ -97,11 +94,9 @@ namespace DrivingSchoolAPI.Controllers
                 PurchaseDate = cs.PurchaseDate,  
                 Quantity = cs.Quantity,            
                 Status = cs.Status,
-                Notes = cs.Notes,
                 IsUsed = cs.IsUsed,
                 HowManyUsed = cs.HowManyUsed,
-                Manual = cs.Manual,
-                Automatic = cs.Automatic
+
             }).Where(cs => cs.Client.IdClient == id).ToList();
 
             return clientServiceDto;
@@ -140,12 +135,9 @@ namespace DrivingSchoolAPI.Controllers
                 VariantService = clientService.VariantService != null ? clientService.VariantService : null,
                 PurchaseDate = clientService.PurchaseDate,
                 Quantity = clientService.Quantity,
-                Status = clientService.Status,
-                Notes = clientService.Notes,
                 IsUsed = clientService.IsUsed,
                 HowManyUsed = clientService.HowManyUsed,
-                Manual = clientService.Manual,
-                Automatic = clientService.Automatic
+
             };
 
             return clientServiceDto;
@@ -156,61 +148,61 @@ namespace DrivingSchoolAPI.Controllers
 
         // POST: api/ClientServices
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<IActionResult> PostClientServices([FromBody] List<ClientServiceDto> clientServiceDtos)
-        {
-            if (clientServiceDtos == null || !clientServiceDtos.Any())
-            {
-                return BadRequest("Payload is empty or invalid.");
-            }
-            foreach (var dto in clientServiceDtos)
-            {
-                Console.WriteLine($"ClientId: {dto.Client?.IdClient}, ServiceId: {dto.Service?.IdService}, Quantity: {dto.Quantity}");
-            }
-            try
-            {
-                foreach (var clientServiceDto in clientServiceDtos)
-                {
-                    var execSql = @"
-                        EXEC DodajKlientUsluga 
-                        @id_klient = @ClientId, 
-                        @id_usluga = @ServiceId, 
-                        @ilosc = @Quantity,
-                        @data_zakupu = @PurchaseDate,
-                        @uwagi = @Notes,
-                        @podstawowa_praktyka = @BasicPractice,
-                        @rozszerzona_praktyka = @ExtendedPractice,
-                        @stacjonarnie_teoria = @StationaryTheory,
-                        @zaliczona_teoria = @TheoryCompleted,
-                        @manual = @Manual,
-                        @automat = @Automatic;";
+        //[HttpPost]
+        //public async Task<IActionResult> PostClientServices([FromBody] List<ClientServiceDto> clientServiceDtos)
+        //{
+        //    if (clientServiceDtos == null || !clientServiceDtos.Any())
+        //    {
+        //        return BadRequest("Payload is empty or invalid.");
+        //    }
+        //    foreach (var dto in clientServiceDtos)
+        //    {
+        //        Console.WriteLine($"ClientId: {dto.Client?.IdClient}, ServiceId: {dto.Service?.IdService}, Quantity: {dto.Quantity}");
+        //    }
+        //    try
+        //    {
+        //        foreach (var clientServiceDto in clientServiceDtos)
+        //        {
+        //            var execSql = @"
+        //                EXEC DodajKlientUsluga 
+        //                @id_klient = @ClientId, 
+        //                @id_usluga = @ServiceId, 
+        //                @ilosc = @Quantity,
+        //                @data_zakupu = @PurchaseDate,
+        //                @uwagi = @Notes,
+        //                @podstawowa_praktyka = @BasicPractice,
+        //                @rozszerzona_praktyka = @ExtendedPractice,
+        //                @stacjonarnie_teoria = @StationaryTheory,
+        //                @zaliczona_teoria = @TheoryCompleted,
+        //                @manual = @Manual,
+        //                @automat = @Automatic;";
 
-                    var parameters = new[]
-                    {
-                        new SqlParameter("@ClientId", SqlDbType.Int) { Value = clientServiceDto.Client.IdClient },
-                        new SqlParameter("@ServiceId", SqlDbType.Int) { Value = clientServiceDto.Service.IdService },
-                        new SqlParameter("@Quantity", SqlDbType.Int) { Value = clientServiceDto.Quantity },
-                        new SqlParameter("@PurchaseDate", SqlDbType.DateTime) { Value = clientServiceDto.PurchaseDate },
-                        new SqlParameter("@Notes", SqlDbType.Text) { Value = (object?)clientServiceDto.Notes ?? DBNull.Value },
-                        new SqlParameter("@BasicPractice", SqlDbType.Bit) { Value = (object?)clientServiceDto.BasicPractice ?? DBNull.Value },
-                        new SqlParameter("@ExtendedPractice", SqlDbType.Bit) { Value = (object?)clientServiceDto.ExtendedPractice ?? DBNull.Value },
-                        new SqlParameter("@StationaryTheory", SqlDbType.Bit) { Value = (object?)clientServiceDto.StationaryTheory ?? DBNull.Value },
-                        new SqlParameter("@TheoryCompleted", SqlDbType.Bit) { Value = (object?)clientServiceDto.TheoryCompleted ?? DBNull.Value },
-                        new SqlParameter("@Manual", SqlDbType.Bit) { Value = (object?)clientServiceDto.Manual ?? DBNull.Value },
-                        new SqlParameter("@Automatic", SqlDbType.Bit) { Value = (object?)clientServiceDto.Automatic?? DBNull.Value }
-                    };
+        //            var parameters = new[]
+        //            {
+        //                new SqlParameter("@ClientId", SqlDbType.Int) { Value = clientServiceDto.Client.IdClient },
+        //                new SqlParameter("@ServiceId", SqlDbType.Int) { Value = clientServiceDto.Service.IdService },
+        //                new SqlParameter("@Quantity", SqlDbType.Int) { Value = clientServiceDto.Quantity },
+        //                new SqlParameter("@PurchaseDate", SqlDbType.DateTime) { Value = clientServiceDto.PurchaseDate },
+        //                new SqlParameter("@Notes", SqlDbType.Text) { Value = (object?)clientServiceDto.Notes ?? DBNull.Value },
+        //                new SqlParameter("@BasicPractice", SqlDbType.Bit) { Value = (object?)clientServiceDto.BasicPractice ?? DBNull.Value },
+        //                new SqlParameter("@ExtendedPractice", SqlDbType.Bit) { Value = (object?)clientServiceDto.ExtendedPractice ?? DBNull.Value },
+        //                new SqlParameter("@StationaryTheory", SqlDbType.Bit) { Value = (object?)clientServiceDto.StationaryTheory ?? DBNull.Value },
+        //                new SqlParameter("@TheoryCompleted", SqlDbType.Bit) { Value = (object?)clientServiceDto.TheoryCompleted ?? DBNull.Value },
+        //                new SqlParameter("@Manual", SqlDbType.Bit) { Value = (object?)clientServiceDto.Manual ?? DBNull.Value },
+        //                new SqlParameter("@Automatic", SqlDbType.Bit) { Value = (object?)clientServiceDto.Automatic?? DBNull.Value }
+        //            };
 
-                    await _context.Database.ExecuteSqlRawAsync(execSql, parameters);
+        //            await _context.Database.ExecuteSqlRawAsync(execSql, parameters);
 
-                }
+        //        }
 
-                return Ok("All client services have been added successfully.");
-            }
-            catch (Exception ex)
-            {
-                return Problem(detail: ex.Message, statusCode: 500);
-            }
-        }
+        //        return Ok("All client services have been added successfully.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Problem(detail: ex.Message, statusCode: 500);
+        //    }
+        //}
 
 
         // DELETE: api/ClientServices/5

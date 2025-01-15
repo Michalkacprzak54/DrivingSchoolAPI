@@ -26,8 +26,6 @@ namespace DrivingSchoolAPI.Entities
         [Column("stan")]
         public string Status { get; set; }
 
-        [Column("uwagi")]
-        public string? Notes { get; set; }
 
         [Column("czy_wykorzystana")]
         public bool IsUsed { get; set; }
@@ -35,11 +33,6 @@ namespace DrivingSchoolAPI.Entities
         [Column("ile_wykorzystane")]
         public int HowManyUsed{ get; set; }
 
-        [Column("manual")]
-        public bool? Manual { get; set; }
-
-        [Column("automat")]
-        public bool? Automatic { get; set; }
 
         // Używaj właściwości Client i Service bez prefixów
         public Client Client { get; set; }
