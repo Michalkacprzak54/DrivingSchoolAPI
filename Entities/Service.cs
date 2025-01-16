@@ -23,8 +23,6 @@ namespace DrivingSchoolAPI.Entities
         [Column("kategoria")]
         public string? Category { get; set; }
 
-        public TraineeCourse TraineeCourse { get; set; }
-
         public ICollection<VariantService> VariantServices { get; set; }
         public ICollection<Photo> Photos { get; set; }
     }

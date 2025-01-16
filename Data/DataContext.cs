@@ -243,9 +243,9 @@ namespace DrivingSchoolAPI.Data
                 .HasForeignKey<TraineeCourse>(tc => tc.IdClient);
 
             modelBuilder.Entity<TraineeCourse>()
-                .HasOne(tc => tc.Service)
-                .WithOne(s => s.TraineeCourse)
-                .HasForeignKey<TraineeCourse>(tc => tc.IdService);
+                .HasOne(tc => tc.VariantService)
+                .WithMany(vs => vs.TraineeCourses)
+                .HasForeignKey(tc => tc.IdVariantService);
 
             modelBuilder.Entity<TraineeCourse>()
                 .HasOne(tc => tc.Status)

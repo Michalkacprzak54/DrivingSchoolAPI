@@ -29,5 +29,8 @@ namespace DrivingSchoolAPI.Entities
         [JsonIgnore]
         public Service? Service { get; set; }
 
+        [JsonIgnore]
+        public ICollection<TraineeCourse>? TraineeCourses { get; set; }
+
     }
 }

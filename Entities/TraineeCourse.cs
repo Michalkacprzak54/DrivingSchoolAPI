@@ -8,8 +8,8 @@ namespace DrivingSchoolAPI.Entities
         public int IdTraineeCourse { get; set; }
         [Column("id_klient")]
         public int IdClient{ get; set; }
-        [Column("id_usluga")]
-        public int IdService { get; set; }
+        [Column("id_usluga_wariant")]
+        public int IdVariantService { get; set; }
         [Column("data_rozpoczecia")]
         public DateOnly StartDate { get; set; }
         [Column("data_zakonczenia")]
@@ -27,9 +27,10 @@ namespace DrivingSchoolAPI.Entities
         public string? Notes { get; set; }
 
         public Client? Client { get; set; }
-        public Service? Service { get; set; }
+        public VariantService? VariantService { get; set; }
         public Status? Status { get; set; }
         public CourseDetails? CourseDetails { get; set; }
+
 
     }
 }
