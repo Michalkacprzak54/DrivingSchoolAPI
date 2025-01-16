@@ -32,8 +32,9 @@ namespace DrivingSchoolAPI.Controllers
             var traineeCourses = await _context.TraineeCourses
                 .Include(tc => tc.Client)
                 .Include(tc => tc.VariantService)
+                    .ThenInclude(VariantService => VariantService.Service)
                 .Include(tc => tc.Status)
-                .Include(tc => tc.CourseDetails) 
+                .Include(tc => tc.CourseDetails)
                 .Select(tc => new TraineeCourseDto
                 {
                     IdTraineeCourse = tc.IdTraineeCourse,
@@ -44,6 +45,12 @@ namespace DrivingSchoolAPI.Controllers
                         ClientLastName = tc.Client.ClientLastName
                     },
                     VarinatService = tc.VariantService,
+                    Service = new ServiceDto
+                    {
+                        IdService = tc.VariantService.Service.IdService,
+                        ServiceName = tc.VariantService.Service.ServiceName,
+                        ServicePlace = tc.VariantService.Service.ServicePlace
+                    },
                     Status = new StatusDto
                     {
                         IdStatus = tc.Status.IdStatus
@@ -77,6 +84,7 @@ namespace DrivingSchoolAPI.Controllers
                 .Where(tc => tc.Client.IdClient == id)  
                .Include(tc => tc.Client)
                .Include(tc => tc.VariantService)
+                    .ThenInclude(VariantService => VariantService.Service)
                .Include(tc => tc.Status)
                .Include(tc => tc.CourseDetails)  
                .Select(tc => new TraineeCourseDto
@@ -89,6 +97,12 @@ namespace DrivingSchoolAPI.Controllers
                        ClientLastName = tc.Client.ClientLastName
                    },
                    VarinatService = tc.VariantService,
+                   Service = new ServiceDto
+                   {
+                       IdService = tc.VariantService.Service.IdService,
+                       ServiceName = tc.VariantService.Service.ServiceName,
+                       ServicePlace = tc.VariantService.Service.ServicePlace
+                   },
                    Status = new StatusDto
                    {
                        IdStatus = tc.Status.IdStatus
