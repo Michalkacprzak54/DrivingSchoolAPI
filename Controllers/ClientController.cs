@@ -44,9 +44,8 @@ namespace DrivingSchoolAPI.Controllers
             var client = await _context.Clients
                 .Include(c => c.City)
                 .Include(c => c.ZipCode)
-                //.Include(c => c.TraineeCourse)
-                .Include(c => c.ClientServices)
-                    .ThenInclude(cs => cs.Service)
+                //.Include(c => c.ClientServices)
+                //    .ThenInclude(cs => cs.Service)
                 .FirstAsync(c => c.IdClient == id);
 
             if (client == null)

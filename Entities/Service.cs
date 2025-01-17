@@ -21,7 +21,10 @@ namespace DrivingSchoolAPI.Entities
         public string ServicePlace { get; set; }
 
         [Column("kategoria")]
-        public string? Category { get; set; }
+        public string Category { get; set; }
+
+        [Column("minimalny_wiek")]
+        public decimal MinimumAge { get; set; }
 
         public ICollection<VariantService> VariantServices { get; set; }
         public ICollection<Photo> Photos { get; set; }
