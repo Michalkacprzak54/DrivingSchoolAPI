@@ -63,7 +63,7 @@ namespace DrivingSchoolAPI.Controllers
                 .Include(c => c.City)
                 .Include(c => c.ZipCode)
                 .Include(c => c.ClientLogin)
-                .FirstAsync();
+                .FirstAsync(c => c.IdClient == id);
 
             if (client == null)
             {
