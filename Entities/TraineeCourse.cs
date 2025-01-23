@@ -23,6 +23,9 @@ namespace DrivingSchoolAPI.Entities
         [Column("badania_lekarskie")]
         public bool MedicalCheck { get; set; }
 
+        [Column("zgoda_rodzica")]
+        public bool? ParentalConsent{ get; set; }
+
         [Column("uwagi")]
         public string? Notes { get; set; }
 

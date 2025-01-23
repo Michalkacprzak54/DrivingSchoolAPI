@@ -15,6 +15,7 @@ namespace DrivingSchoolAPI.Dtos
         public decimal? PESEL { get; set; }
         public string? PKK { get; set; }
         public bool? MedicalCheck { get; set; }
+        public bool? ParentalConsent { get; set; }
         public string? Notes { get; set; }
         public DateTime? PurchaseDate { get; set; }
         public CourseDetailsDto? CourseDetails { get; set; }

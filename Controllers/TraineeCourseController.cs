@@ -61,6 +61,7 @@ namespace DrivingSchoolAPI.Controllers
                     PESEL = tc.PESEL,
                     PKK = tc.PKK,
                     MedicalCheck = tc.MedicalCheck,
+                    ParentalConsent = tc.ParentalConsent,
                     Notes = tc.Notes,
                     CourseDetails = new CourseDetailsDto
                     {
@@ -114,6 +115,7 @@ namespace DrivingSchoolAPI.Controllers
                    PESEL = tc.PESEL,
                    PKK = tc.PKK,
                    MedicalCheck = tc.MedicalCheck,
+                   ParentalConsent = tc.ParentalConsent,
                    Notes = tc.Notes,
                    CourseDetails = new CourseDetailsDto
                    {
@@ -158,6 +160,7 @@ namespace DrivingSchoolAPI.Controllers
                     new SqlParameter("@PESEL", SqlDbType.NVarChar, 11) { Value = createTraineeCourseDto.PESEL},
                     new SqlParameter("@PKK", SqlDbType.NVarChar, 26) { Value = createTraineeCourseDto.PKK},
                     new SqlParameter("@MedicalCheck", SqlDbType.Bit) { Value = createTraineeCourseDto.MedicalCheck},
+                    new SqlParameter("@ParentalConsent", SqlDbType.Bit) { Value = createTraineeCourseDto.ParentalConsent ?? (object)DBNull.Value},
                     new SqlParameter("@Notes", SqlDbType.Text) { Value = createTraineeCourseDto.Notes ?? (object)DBNull.Value},
                     new SqlParameter("@PurchaseDate", SqlDbType.DateTime) { Value = createTraineeCourseDto.PurchaseDate},
                     resultMessage
@@ -174,6 +177,7 @@ namespace DrivingSchoolAPI.Controllers
                         @PESEL, 
                         @PKK, 
                         @MedicalCheck, 
+                        @ParentalConsent, 
                         @Notes, 
                         @PurchaseDate, 
                         @resultMessage OUTPUT;";
