@@ -33,15 +33,14 @@ namespace DrivingSchoolAPI.Controllers
         }
 
         // GET: api/PraticeSchedules/5
-        [HttpGet("{idInstructor}/{Category}")]
-        public async Task<ActionResult<PraticeSchedule>> GetPraticeSchedule(int idInstructor, string Category)
+        [HttpGet("{Category}")]
+        public async Task<ActionResult<PraticeSchedule>> GetPraticeSchedule(string Category)
         {
             var praticeSchedule = await _context.PraticeSchedules
                 .Include(ps => ps.Instructor)
                     .ThenInclude(i => i.InstructorEntitlements)
                         .ThenInclude(ie => ie.Entitlement)
-                .Where(ps => ps.IdInstructor == idInstructor
-                    && ps.Instructor.InstructorEntitlements.Any(ie => ie.Entitlement.EntitlementName == Category))
+                .Where(ps => ps.Instructor.InstructorEntitlements.Any(ie => ie.Entitlement.EntitlementName == Category))
                 .ToListAsync();
 
             if (praticeSchedule == null)
