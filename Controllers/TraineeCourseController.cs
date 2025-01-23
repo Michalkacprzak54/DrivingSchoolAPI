@@ -49,7 +49,8 @@ namespace DrivingSchoolAPI.Controllers
                     {
                         IdService = tc.VariantService.Service.IdService,
                         ServiceName = tc.VariantService.Service.ServiceName,
-                        ServicePlace = tc.VariantService.Service.ServicePlace
+                        ServicePlace = tc.VariantService.Service.ServicePlace,
+                        ServiceCategory = tc.VariantService.Service.ServiceCategory
                     },
                     Status = new StatusDto
                     {
@@ -101,7 +102,8 @@ namespace DrivingSchoolAPI.Controllers
                    {
                        IdService = tc.VariantService.Service.IdService,
                        ServiceName = tc.VariantService.Service.ServiceName,
-                       ServicePlace = tc.VariantService.Service.ServicePlace
+                       ServicePlace = tc.VariantService.Service.ServicePlace,
+                       ServiceCategory = tc.VariantService.Service.ServiceCategory
                    },
                    Status = new StatusDto
                    {
@@ -225,21 +227,6 @@ namespace DrivingSchoolAPI.Controllers
             return NoContent();
         }
 
-        // DELETE: api/TraineeCourse/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTraineeCourse(int id)
-        {
-            var traineeCourse = await _context.TraineeCourses.FindAsync(id);
-            if (traineeCourse == null)
-            {
-                return NotFound();
-            }
-
-            _context.TraineeCourses.Remove(traineeCourse);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
 
         private bool TraineeCourseExists(int id)
         {

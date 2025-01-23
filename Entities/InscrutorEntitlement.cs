@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 namespace DrivingSchoolAPI.Entities
 {
     public class InscrutorEntitlement
@@ -15,6 +16,8 @@ namespace DrivingSchoolAPI.Entities
 
         [Column("data_uprawnienie")]
         public DateOnly DateEntitlement { get; set; }
+
+        [JsonIgnore]
         public Instructor Instructor { get; set; }
         public Entitlement Entitlement { get; set; }
     }

@@ -24,7 +24,7 @@ namespace DrivingSchoolAPI.Entities
         [JsonIgnore]
         public InstructorDetails? InstructorDetails { get; set; }
 
-        [JsonIgnore]
+        //[JsonIgnore]
         public ICollection<InscrutorEntitlement> InstructorEntitlements { get; set; }
 
 

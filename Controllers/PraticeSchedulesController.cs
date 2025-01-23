@@ -27,14 +27,22 @@ namespace DrivingSchoolAPI.Controllers
         {
             return await _context.PraticeSchedules
                 .Include(ps => ps.Instructor)
+                    .ThenInclude(i => i.InstructorEntitlements)
+                        .ThenInclude(ie => ie.Entitlement)
                 .ToListAsync();
         }
 
         // GET: api/PraticeSchedules/5
-        [HttpGet("{idInstructor}")]
-        public async Task<ActionResult<PraticeSchedule>> GetPraticeSchedule(int idInstructor)
+        [HttpGet("{idInstructor}/{Category}")]
+        public async Task<ActionResult<PraticeSchedule>> GetPraticeSchedule(int idInstructor, string Category)
         {
-            var praticeSchedule = await _context.PraticeSchedules.Where(ps => ps.IdInstructor == idInstructor).ToListAsync();
+            var praticeSchedule = await _context.PraticeSchedules
+                .Include(ps => ps.Instructor)
+                    .ThenInclude(i => i.InstructorEntitlements)
+                        .ThenInclude(ie => ie.Entitlement)
+                .Where(ps => ps.IdInstructor == idInstructor
+                    && ps.Instructor.InstructorEntitlements.Any(ie => ie.Entitlement.EntitlementName == Category))
+                .ToListAsync();
 
             if (praticeSchedule == null)
             {
