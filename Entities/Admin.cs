@@ -9,9 +9,6 @@ namespace DrivingSchoolAPI.Entities
         [Column("id_administrator")]
         public int IdAdmin { get; set; }
 
-        [Column("login")]
-        public string AdminLogin { get; set; }
-
         [Column("haslo")]
         public string AdminPassword { get; set; }
         
