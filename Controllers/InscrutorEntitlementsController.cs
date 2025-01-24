@@ -50,24 +50,28 @@ namespace DrivingSchoolAPI.Controllers
         {
             if (id != inscrutorEntitlement.IdInscrutorEntitlement)
             {
-                return BadRequest();
+                return BadRequest("ID w żądaniu nie zgadza się z ID uprawnienia.");
             }
-            _context.Entry(inscrutorEntitlement).State = EntityState.Modified;
+
             try
             {
-                await _context.SaveChangesAsync();
+                // Wywołanie procedury składowanej
+                var result = await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC UpdateUprawnienie @id_instruktor_uprawnienie = {0}, @nowa_data = {1}",
+                    id,
+                    inscrutorEntitlement.DateEntitlement
+                );
+
+                if (result == 0)
+                {
+                    return NotFound("Nie znaleziono uprawnienia o podanym ID.");
+                }
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!InscrutorEntitlementExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500, $"Wystąpił błąd podczas aktualizacji: {ex.Message}");
             }
+
             return NoContent();
         }
 
