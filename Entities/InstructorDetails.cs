@@ -9,6 +9,10 @@ namespace DrivingSchoolAPI.Entities
         public int IdInstructorDetails { get; set; }
         [Column("id_instruktor")]
         public int IdInstructor { get; set; }
+
+        [Column("data_urodzenia")]
+        public DateOnly InstructorBirthDay { get; set; }
+
         [Column("haslo")]
         public string InstructorPassword { get; set; }
         [Column("pesel")]

@@ -43,6 +43,8 @@ namespace DrivingSchoolAPI.Controllers
         {
             var instructorDetail = await _context.InstructorDetails
                 .Include(id => id.Instructor)
+                    .ThenInclude(i => i.InstructorEntitlements)
+                        .ThenInclude(ie => ie.Entitlement)  
                 .Include(id => id.City)
                 .Include(id => id.ZipCode)
                 .FirstOrDefaultAsync(id => id.IdInstructor == idInstructor);
