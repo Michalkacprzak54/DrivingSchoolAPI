@@ -128,6 +128,49 @@ namespace DrivingSchoolAPI.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        [HttpPost("addInstructor")]
+        public async Task<IActionResult> AddInstructor([FromBody] InstructorDetailsDto request)
+        {
+            if (request == null)
+            {
+                return BadRequest("Nieprawidłowe dane wejściowe.");
+            }
+
+            try
+            {
+                // Wywołanie procedury składowanej przy użyciu EF
+                var result = await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC DodajInstruktor @imie, @nazwisko, @nr_telefonu, @adres_email, @czy_prowadzi_praktyke, @czy_prowadzi_teorie, @data_urodzenia, @haslo, @pesel, @miasto, @kod_pocztowy, @ulica, @nr_domu, @nr_lokalu",
+                    new SqlParameter("@imie", request.InstructorFirstName),
+                    new SqlParameter("@nazwisko", request.InstructorLastName),
+                    new SqlParameter("@nr_telefonu", request.InstructorPhoneNumber),
+                    new SqlParameter("@adres_email", request.InstructorEmail),
+                    new SqlParameter("@czy_prowadzi_praktyke", request.InstructorTeachesPractice),
+                    new SqlParameter("@czy_prowadzi_teorie", request.InstructorTeachesTheory),
+                    new SqlParameter("@data_urodzenia", request.InstructorDateOfBirth),
+                    new SqlParameter("@haslo", BCrypt.Net.BCrypt.HashPassword(request.InstructorPassword)), // Hashowanie hasła
+                    new SqlParameter("@pesel", request.InstructorPesel),
+                    new SqlParameter("@miasto", request.InstructorCity),
+                    new SqlParameter("@kod_pocztowy", request.InstructorZipCode),
+                    new SqlParameter("@ulica", request.InstructorStreet),
+                    new SqlParameter("@nr_domu", request.InstructorHouseNumber),
+                    new SqlParameter("@nr_lokalu", (object?)request.InstructorFlatNumber ?? DBNull.Value)
+                );
+
+                if (result >= 0)
+                {
+                    return Ok("Instruktor został pomyślnie dodany.");
+                }
+
+                return BadRequest("Nie udało się dodać instruktora.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Błąd serwera: {ex.Message}");
+            }
+        }
+
+
         [HttpPost("schedule")]
         public async Task<IActionResult> AddSchedule([FromBody] ScheduleRequest scheduleRequest)
         {
@@ -167,51 +210,51 @@ namespace DrivingSchoolAPI.Controllers
             }
         }
 
-        [HttpPut("Edit/{id}")]
-        public async Task<IActionResult> EditClient(int id, [FromBody] InstructorDetailsDto editRequest)
-        {
-            if (editRequest == null || id <= 0)
-            {
-                return BadRequest("Nieprawidłowe dane do edycji.");
-            }
+        //[HttpPut("Edit/{id}")]
+        //public async Task<IActionResult> EditClient(int id, [FromBody] InstructorDetailsDto editRequest)
+        //{
+        //    if (editRequest == null || id <= 0)
+        //    {
+        //        return BadRequest("Nieprawidłowe dane do edycji.");
+        //    }
 
-            try
-            {
-                // Weryfikacja, czy klient istnieje
-                var existingClient = await _context.Instructors.FindAsync(id);
-                if (existingClient == null)
-                {
-                    return NotFound("Instruktor nie istnieje.");
-                }
-                string newPassword = BCrypt.Net.BCrypt.HashPassword(editRequest.InstructorPassword); 
-                // Wywołanie procedury składowanej EdytujKlient
-                var result = await _context.Database.ExecuteSqlRawAsync(
-                    "EXEC AktualizujInstruktor @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7,@p8",
-                    id,                                      
-                    editRequest.InstructorEmail,
-                    newPassword,                    
-                    editRequest.InstructorStreet,                    
-                    editRequest.InstructorHouseNumber,                 
-                    editRequest.InstructorFlatNumber,                     
-                    editRequest.InstructorPhoneNumber,                
-                    editRequest.InstructorCity,         
-                    editRequest.InstructorZipCode
-                );
+        //    try
+        //    {
+        //        // Weryfikacja, czy klient istnieje
+        //        var existingClient = await _context.Instructors.FindAsync(id);
+        //        if (existingClient == null)
+        //        {
+        //            return NotFound("Instruktor nie istnieje.");
+        //        }
+        //        string newPassword = BCrypt.Net.BCrypt.HashPassword(editRequest.InstructorPassword); 
+        //        // Wywołanie procedury składowanej EdytujKlient
+        //        var result = await _context.Database.ExecuteSqlRawAsync(
+        //            "EXEC AktualizujInstruktor @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7,@p8",
+        //            id,                                      
+        //            editRequest.InstructorEmail,
+        //            newPassword,                    
+        //            editRequest.InstructorStreet,                    
+        //            editRequest.InstructorHouseNumber,                 
+        //            editRequest.InstructorFlatNumber,                     
+        //            editRequest.InstructorPhoneNumber,                
+        //            editRequest.InstructorCity,         
+        //            editRequest.InstructorZipCode
+        //        );
 
-                if (result >= 0)
-                {
-                    return NoContent(); // Edycja zakończona sukcesem
-                }
-                else
-                {
-                    return StatusCode(500, "Błąd podczas edycji instruktora.");
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Błąd serwera: {ex.Message}");
-            }
-        }
+        //        if (result >= 0)
+        //        {
+        //            return NoContent(); // Edycja zakończona sukcesem
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, "Błąd podczas edycji instruktora.");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Błąd serwera: {ex.Message}");
+        //    }
+        //}
 
 
     }
