@@ -21,6 +21,9 @@ namespace DrivingSchoolAPI.Entities
         [Column("czy_prowadzi_teorie")]
         public bool InstructorTheory { get; set; }
 
+        [Column("czy_pracownik")]
+        public bool InstructorIsWorker { get; set; }
+
         [JsonIgnore]
         public InstructorDetails? InstructorDetails { get; set; }
 

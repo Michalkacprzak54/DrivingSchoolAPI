@@ -170,6 +170,34 @@ namespace DrivingSchoolAPI.Controllers
             }
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteInstructor(int id)
+        {
+            // Sprawdzenie, czy instruktor istnieje
+            var instructor = await _context.Instructors
+                .FirstOrDefaultAsync(i => i.IdInstructor == id);
+
+            if (instructor == null)
+            {
+                return NotFound(new { message = "Instruktor nie znaleziony." });
+            }
+
+            try
+            {
+                // Wywołanie procedury SQL do usunięcia instruktora i aktualizacji danych
+                var instructorIdParam = new SqlParameter("@InstructorId", id);
+
+                await _context.Database.ExecuteSqlRawAsync("EXEC RemoveInstructorData @InstructorId", instructorIdParam);
+
+                return Ok(new { message = "Instruktor został usunięty, a dane zaktualizowane." });
+            }
+            catch (Exception ex)
+            {
+                // W przypadku błędu
+                return StatusCode(500, new { message = "Wystąpił błąd podczas usuwania instruktora.", error = ex.Message });
+            }
+        }
+
 
         [HttpPost("schedule")]
         public async Task<IActionResult> AddSchedule([FromBody] ScheduleRequest scheduleRequest)
@@ -210,51 +238,6 @@ namespace DrivingSchoolAPI.Controllers
             }
         }
 
-        //[HttpPut("Edit/{id}")]
-        //public async Task<IActionResult> EditClient(int id, [FromBody] InstructorDetailsDto editRequest)
-        //{
-        //    if (editRequest == null || id <= 0)
-        //    {
-        //        return BadRequest("Nieprawidłowe dane do edycji.");
-        //    }
-
-        //    try
-        //    {
-        //        // Weryfikacja, czy klient istnieje
-        //        var existingClient = await _context.Instructors.FindAsync(id);
-        //        if (existingClient == null)
-        //        {
-        //            return NotFound("Instruktor nie istnieje.");
-        //        }
-        //        string newPassword = BCrypt.Net.BCrypt.HashPassword(editRequest.InstructorPassword); 
-        //        // Wywołanie procedury składowanej EdytujKlient
-        //        var result = await _context.Database.ExecuteSqlRawAsync(
-        //            "EXEC AktualizujInstruktor @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7,@p8",
-        //            id,                                      
-        //            editRequest.InstructorEmail,
-        //            newPassword,                    
-        //            editRequest.InstructorStreet,                    
-        //            editRequest.InstructorHouseNumber,                 
-        //            editRequest.InstructorFlatNumber,                     
-        //            editRequest.InstructorPhoneNumber,                
-        //            editRequest.InstructorCity,         
-        //            editRequest.InstructorZipCode
-        //        );
-
-        //        if (result >= 0)
-        //        {
-        //            return NoContent(); // Edycja zakończona sukcesem
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, "Błąd podczas edycji instruktora.");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, $"Błąd serwera: {ex.Message}");
-        //    }
-        //}
 
 
     }
