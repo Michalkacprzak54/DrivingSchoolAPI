@@ -9,7 +9,7 @@
         public bool InstructorTeachesPractice { get; set; }
         public bool InstructorTeachesTheory { get; set; }
         public DateTime InstructorDateOfBirth { get; set; }
-        public string InstructorPassword { get; set; }
+        public string? InstructorPassword { get; set; }
         public decimal InstructorPesel { get; set; }
         public string InstructorCity { get; set; }
         public string InstructorZipCode { get; set; }

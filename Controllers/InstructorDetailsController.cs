@@ -170,6 +170,49 @@ namespace DrivingSchoolAPI.Controllers
             }
         }
 
+        [HttpPut("editInstructor/{id}")]
+        public async Task<IActionResult> EditInstructor(int id, [FromBody] InstructorDetailsDto request)
+        {
+            if(request == null || id <= 0)
+            {
+                return BadRequest("Nieprawidłowe dane do edycji.");
+            }
+
+            try
+            {
+                // Wywołanie procedury składowanej przy użyciu EF
+                var result = await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC EdytujInstruktor @id_instruktora, @imie, @nazwisko, @nr_telefonu, @adres_email, @czy_prowadzi_praktyke, @czy_prowadzi_teorie, @data_urodzenia, @pesel, @miasto, @kod_pocztowy, @ulica, @nr_domu, @nr_lokalu",
+                    new SqlParameter("@id_instruktora", id), // ID instruktora, który ma zostać zaktualizowany
+                    new SqlParameter("@imie", request.InstructorFirstName),
+                    new SqlParameter("@nazwisko", request.InstructorLastName),
+                    new SqlParameter("@nr_telefonu", request.InstructorPhoneNumber),
+                    new SqlParameter("@adres_email", request.InstructorEmail),
+                    new SqlParameter("@czy_prowadzi_praktyke", request.InstructorTeachesPractice),
+                    new SqlParameter("@czy_prowadzi_teorie", request.InstructorTeachesTheory),
+                    new SqlParameter("@data_urodzenia", request.InstructorDateOfBirth),
+                    new SqlParameter("@pesel", request.InstructorPesel),
+                    new SqlParameter("@miasto", request.InstructorCity),
+                    new SqlParameter("@kod_pocztowy", request.InstructorZipCode),
+                    new SqlParameter("@ulica", request.InstructorStreet),
+                    new SqlParameter("@nr_domu", request.InstructorHouseNumber),
+                    new SqlParameter("@nr_lokalu", (object?)request.InstructorFlatNumber ?? DBNull.Value)
+                );
+
+                if (result >= 0)
+                {
+                    return Ok("Instruktor został pomyślnie zaktualizowany.");
+                }
+
+                return BadRequest("Nie udało się zaktualizować instruktora.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Błąd serwera: {ex.Message}");
+            }
+        }
+
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInstructor(int id)
         {
