@@ -213,6 +213,40 @@ namespace DrivingSchoolAPI.Controllers
         }
 
 
+        [HttpPut("changeInstructorPassword/{id}")]
+        public async Task<IActionResult> ChangeInstructorPassword(int id, [FromBody] ChangePasswordDto request)
+        {
+            if (request == null || id <= 0 || string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                return BadRequest("Nieprawidłowe dane do zmiany hasła.");
+            }
+
+            try
+            {
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+
+                var result = await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC ZmienHasloInstruktora @instructorId, @noweHaslo",
+                    new SqlParameter("@instructorId", id),
+                    new SqlParameter("@noweHaslo", hashedPassword)
+                );
+
+                if (result >= 0)
+                {
+                    return Ok("Hasło zostało pomyślnie zmienione.");
+                }
+
+
+                return BadRequest("Nie udało się zmienić hasła.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd serwera: {ex.Message}");
+                return StatusCode(500, $"Błąd serwera: {ex.Message}");
+            }
+        }
+
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInstructor(int id)
         {
