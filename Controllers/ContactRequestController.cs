@@ -25,19 +25,6 @@ namespace DrivingSchoolAPI.Controllers
             return await _context.ContactRequests.ToListAsync();
         }
 
-        // GET: api/ContactRequest/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ContactRequest>> GetContactRequest(int id)
-        {
-            var contactRequest = await _context.ContactRequests.FindAsync(id);
-
-            if (contactRequest == null)
-            {
-                return NotFound();
-            }
-
-            return contactRequest;
-        }
         // POST: api/ContactRequest
         [HttpPost]
         public async Task<ActionResult<ContactRequest>> PostContactRequest(ContactRequest contactRequest)
@@ -51,6 +38,31 @@ namespace DrivingSchoolAPI.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetContactRequest", new { id = contactRequest.IdContactRequest }, contactRequest);
+        }
+
+        [HttpPut("resolve/{id}")]
+        public async Task<IActionResult> MarkRequestAsResolved(int id)
+        {
+            var contactRequest = await _context.ContactRequests.FindAsync(id);
+
+            if (contactRequest == null)
+            {
+                return NotFound("Zgłoszenie nie istnieje.");
+            }
+
+            // Zmiana statusu zgłoszenia na "załatwione"
+            contactRequest.IsCurrent = false;
+            _context.Entry(contactRequest).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok("Zgłoszenie oznaczone jako załatwione.");
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return StatusCode(500, "Błąd podczas aktualizacji zgłoszenia.");
+            }
         }
     }
 }

@@ -21,5 +21,9 @@ namespace DrivingSchoolAPI.Entities
 
         [Column("tresc_wiadomosci")]
         public string Message { get; set; }
+
+        [Column("czy_aktualne")]
+        public bool IsCurrent { get; set; }
     }
+
 }
