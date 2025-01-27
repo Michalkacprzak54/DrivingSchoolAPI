@@ -26,6 +26,9 @@ namespace DrivingSchoolAPI.Entities
         [Column("minimalny_wiek")]
         public decimal MinimumAge { get; set; }
 
+        [Column("czy_opublikowana")]
+        public bool IsPublic { get; set; }
+
         public ICollection<VariantService> VariantServices { get; set; }
         public ICollection<Photo> Photos { get; set; }
     }
