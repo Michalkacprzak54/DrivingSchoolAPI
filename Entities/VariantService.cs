@@ -26,6 +26,9 @@ namespace DrivingSchoolAPI.Entities
         [Column("teoria_zaliczona")]
         public bool? TheoryDone { get; set; }
 
+        [Column("czy_opublikowane")]
+        public bool? IsPublished { get; set; }
+
         [JsonIgnore]
         public Service? Service { get; set; }
 
