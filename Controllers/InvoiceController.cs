@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DrivingSchoolAPI.Data;
 using DrivingSchoolAPI.Entities;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace DrivingSchoolAPI.Controllers
 {
@@ -48,64 +50,31 @@ namespace DrivingSchoolAPI.Controllers
             return invoice;
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutInvoice(int id, Invoice invoice)
+        [HttpPost]
+        public async Task<IActionResult> PostPayment([FromBody] PaymentRequest paymentRequest)
         {
-            if (id != invoice.IdInvocie)
+            if (paymentRequest == null)
             {
-                return BadRequest();
+                return BadRequest("Dane płatności są wymagane.");
             }
-
-            _context.Entry(invoice).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC DodajPlatnosc @id_faktura, @data_platnosci, @kwota, @metoda_platnosci",
+                    new SqlParameter("@id_faktura", paymentRequest.InvoiceId),
+                    new SqlParameter("@data_platnosci", paymentRequest.Date),
+                    new SqlParameter("@kwota", paymentRequest.Amount),
+                    new SqlParameter("@metoda_platnosci", paymentRequest.Method)
+                );
+
+                return Ok("Płatność została dodana.");
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!InvoiceExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500, $"Błąd podczas dodawania płatności: {ex.Message}");
             }
-
-            return NoContent();
         }
-        private bool InvoiceExists(int id)
-        {
-            return _context.Invocies.Any(e => e.IdInvocie == id);
-        }
-        //// POST: api/Invoice
-        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPost]
-        //public async Task<ActionResult<Invoice>> PostInvoice(Invoice invoice)
-        //{
-        //    _context.Invocies.Add(invoice);
-        //    await _context.SaveChangesAsync();
-
-        //    return CreatedAtAction("GetInvoice", new { id = invoice.IdInvocie }, invoice);
-        //}
-
-        //// DELETE: api/Invoice/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteInvoice(int id)
-        //{
-        //    var invoice = await _context.Invocies.FindAsync(id);
-        //    if (invoice == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    _context.Invocies.Remove(invoice);
-        //    await _context.SaveChangesAsync();
-
-        //    return NoContent();
-        //}
 
 
     }
