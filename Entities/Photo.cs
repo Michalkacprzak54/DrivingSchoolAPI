@@ -12,7 +12,7 @@ namespace DrivingSchoolAPI.Entities
         public int IdService { get; set; }
 
         [Column("sciezka_zdjecie")]
-        public string PhotoPath { get; set; }
+        public string? PhotoPath { get; set; }
 
         [Column("opis_alternatywny")]
         public string AlternativeDescription { get; set; }
