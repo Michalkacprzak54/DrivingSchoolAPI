@@ -19,28 +19,6 @@ namespace DrivingSchoolAPI.Controllers
             _context = context;
         }
 
-        // GET: api/Photo
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Photo>>> GetPhotos()
-        {
-            return await _context.Photos.ToListAsync();
-            
-
-        }
-
-        // GET: api/Photo/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Photo>> GetPhoto(int id)
-        {
-            var photo = await _context.Photos.FirstAsync(p => p.IdPhoto == id);
-
-            if (photo == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(photo);
-        }
 
         [HttpPost("UploadImage")]
         public async Task<ActionResult> UploadImage([FromForm] int serviceId, [FromForm] string alternativeDescription)
@@ -91,23 +69,38 @@ namespace DrivingSchoolAPI.Controllers
         }
 
 
-
-
-
-        // DELETE: api/Photo/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePhoto(int id)
+        [HttpDelete("DeleteImage/{photoId}")]
+        public async Task<ActionResult> DeleteImage(int photoId)
         {
-            var photo = await _context.Photos.FindAsync(id);
-            if (photo == null)
+            try
             {
-                return NotFound();
+                // Znajdź zdjęcie w bazie danych
+                var photo = await _context.Photos.FirstOrDefaultAsync(p => p.IdPhoto == photoId);
+
+                if (photo == null)
+                {
+                    return NotFound("Zdjęcie nie istnieje.");
+                }
+
+                // Ścieżka do pliku na serwerze
+                string filePath = Path.Combine(_photoDirectory, Path.GetFileName(photo.PhotoPath));
+
+                // Usunięcie pliku z serwera, jeśli istnieje
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+
+                // Usunięcie zdjęcia z bazy danych
+                _context.Photos.Remove(photo);
+                await _context.SaveChangesAsync();
+
+                return Ok("Zdjęcie usunięte pomyślnie.");
             }
-
-            _context.Photos.Remove(photo);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Błąd serwera: {ex.Message}");
+            }
         }
 
     }
