@@ -26,8 +26,7 @@ namespace DrivingSchoolAPI.Controllers
         public async Task<ActionResult<IEnumerable<Invoice>>> GetInvocies()
         {
             var invocies = await _context.Invocies
-                .Include(i => i.Client)
-                .Include(i => i.InvoviceItems)
+                .Include(i => i.Payments)
                 .ToListAsync();
             return Ok(invocies);
         }
@@ -37,7 +36,6 @@ namespace DrivingSchoolAPI.Controllers
         public async Task<ActionResult<Invoice>> GetInvoice(int id)
         {
             var invoice = await _context.Invocies
-                .Include(i => i.Client)
                 .Include(i => i.InvoviceItems)
                 .Include(i => i.Payments)
                 .FirstOrDefaultAsync(i => i.IdInvocie == id); 
@@ -50,8 +48,6 @@ namespace DrivingSchoolAPI.Controllers
             return invoice;
         }
 
-        // PUT: api/Invoice/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutInvoice(int id, Invoice invoice)
         {
@@ -80,37 +76,37 @@ namespace DrivingSchoolAPI.Controllers
 
             return NoContent();
         }
-
-        // POST: api/Invoice
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Invoice>> PostInvoice(Invoice invoice)
-        {
-            _context.Invocies.Add(invoice);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetInvoice", new { id = invoice.IdInvocie }, invoice);
-        }
-
-        // DELETE: api/Invoice/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteInvoice(int id)
-        {
-            var invoice = await _context.Invocies.FindAsync(id);
-            if (invoice == null)
-            {
-                return NotFound();
-            }
-
-            _context.Invocies.Remove(invoice);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
         private bool InvoiceExists(int id)
         {
             return _context.Invocies.Any(e => e.IdInvocie == id);
         }
+        //// POST: api/Invoice
+        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        //[HttpPost]
+        //public async Task<ActionResult<Invoice>> PostInvoice(Invoice invoice)
+        //{
+        //    _context.Invocies.Add(invoice);
+        //    await _context.SaveChangesAsync();
+
+        //    return CreatedAtAction("GetInvoice", new { id = invoice.IdInvocie }, invoice);
+        //}
+
+        //// DELETE: api/Invoice/5
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteInvoice(int id)
+        //{
+        //    var invoice = await _context.Invocies.FindAsync(id);
+        //    if (invoice == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    _context.Invocies.Remove(invoice);
+        //    await _context.SaveChangesAsync();
+
+        //    return NoContent();
+        //}
+
+
     }
 }

@@ -20,8 +20,7 @@ namespace DrivingSchoolAPI.Entities
         [Column("stawka_vat")]
         public int Vat { get; set; }
 
+        [JsonIgnore]
         public Invoice Invoice { get; set; }
-
-
     }
 }

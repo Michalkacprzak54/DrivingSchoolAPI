@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 
 namespace DrivingSchoolAPI.Entities
@@ -19,8 +20,11 @@ namespace DrivingSchoolAPI.Entities
         public decimal FullAmount { get; set; }
         [Column("stan")]
         public string InvoiceState { get; set; }
-        public Client Client { get; set; }
-        public ICollection<Payment> Payments { get; set; }
-        public ICollection<InvoiceItem> InvoviceItems { get; set; }  
+
+
+        public Client? Client { get; set; }
+        
+        public ICollection<Payment>? Payments { get; set; }
+        public ICollection<InvoiceItem>? InvoviceItems { get; set; }  
     }
 }

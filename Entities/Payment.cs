@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DrivingSchoolAPI.Entities
 {
@@ -19,6 +20,7 @@ namespace DrivingSchoolAPI.Entities
         [Column("opis_platnosci")]
         public string PaymentDescription { get; set; }
 
+        [JsonIgnore]
         public Invoice Invoice { get; set; }
     }
 }
