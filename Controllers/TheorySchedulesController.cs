@@ -42,17 +42,17 @@ namespace DrivingSchoolAPI.Controllers
             return Ok(theorySchedule);
         }
 
-        // PUT: api/TheorySchedules/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTheorySchedule(int id, TheorySchedule theorySchedule)
+        public async Task<IActionResult> PutTheorySchedule(int id, [FromBody] TheorySchedule updatedData)
         {
-            if (id != theorySchedule.IdTheorySchedule)
+            var existingSchedule = await _context.TheorySchedules.FindAsync(id);
+            if (existingSchedule == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(theorySchedule).State = EntityState.Modified;
+            // Aktualizujemy tylko idInstructor
+            existingSchedule.IdInsctructor = updatedData.IdInsctructor;
 
             try
             {
@@ -73,18 +73,8 @@ namespace DrivingSchoolAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/TheorySchedules
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<TheorySchedule>> PostTheorySchedule(TheorySchedule theorySchedule)
-        {
-            _context.TheorySchedules.Add(theorySchedule);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTheorySchedule", new { id = theorySchedule.IdTheorySchedule }, theorySchedule);
-        }
 
-        // DELETE: api/TheorySchedules/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTheorySchedule(int id)
         {

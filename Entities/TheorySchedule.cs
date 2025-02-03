@@ -10,15 +10,15 @@ namespace DrivingSchoolAPI.Entities
         [Column("id_instruktor")]
         public int? IdInsctructor { get; set; }
         [Column("grupa")]
-        public string GroupName { get; set; }
+        public string? GroupName { get; set; }
         [Column("data")]
-        public DateOnly Date { get; set; }
+        public DateOnly? Date { get; set; }
         [Column("dzien_tygodnia")]
-        public string DayName { get; set; }
+        public string? DayName { get; set; }
         [Column("godzina_rozpoczecia")]
-        public TimeOnly StartHour { get; set; }
+        public TimeOnly? StartHour { get; set; }
         [Column("godzina_zakonczenia")]
-        public TimeOnly EndHour { get; set; }
+        public TimeOnly? EndHour { get; set; }
 
         public Instructor? Instructor { get; set; }
     }
