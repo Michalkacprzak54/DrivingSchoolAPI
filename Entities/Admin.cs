@@ -25,45 +25,4 @@ namespace DrivingSchoolAPI.Entities
     }
 
 
-public static class AdminEndpoints
-{
-	public static void MapAdminEndpoints (this IEndpointRouteBuilder routes)
-    {
-        var group = routes.MapGroup("/api/Admin").WithTags(nameof(Admin));
-
-        group.MapGet("/", () =>
-        {
-            return new [] { new Admin() };
-        })
-        .WithName("GetAllAdmins")
-        .WithOpenApi();
-
-        group.MapGet("/{id}", (int id) =>
-        {
-            //return new Admin { ID = id };
-        })
-        .WithName("GetAdminById")
-        .WithOpenApi();
-
-        group.MapPut("/{id}", (int id, Admin input) =>
-        {
-            return TypedResults.NoContent();
-        })
-        .WithName("UpdateAdmin")
-        .WithOpenApi();
-
-        group.MapPost("/", (Admin model) =>
-        {
-            //return TypedResults.Created($"/api/Admins/{model.ID}", model);
-        })
-        .WithName("CreateAdmin")
-        .WithOpenApi();
-
-        group.MapDelete("/{id}", (int id) =>
-        {
-            //return TypedResults.Ok(new Admin { ID = id });
-        })
-        .WithName("DeleteAdmin")
-        .WithOpenApi();
-    }
-}}
+}

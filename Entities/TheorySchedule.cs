@@ -8,7 +8,7 @@ namespace DrivingSchoolAPI.Entities
         [Column("id_harmonogram_wyklad")]
         public int IdTheorySchedule { get; set; }
         [Column("id_instruktor")]
-        public int IdInsctructor { get; set; }
+        public int? IdInsctructor { get; set; }
         [Column("grupa")]
         public string GroupName { get; set; }
         [Column("data")]

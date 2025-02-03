@@ -297,7 +297,7 @@ namespace DrivingSchoolAPI.Controllers
 
                 var parameters = new[]
                 {
-                        new SqlParameter("@InstructorId", SqlDbType.Int) { Value = scheduleRequest.InstructorId },
+                        new SqlParameter("@InstructorId", SqlDbType.Int) { Value = (object?)scheduleRequest.InstructorId ?? DBNull.Value},
                         new SqlParameter("@StartDate", SqlDbType.Date) { Value = scheduleRequest.StartDate },
                         new SqlParameter("@EndDate", SqlDbType.Date) { Value = scheduleRequest.EndDate },
                         new SqlParameter("@StartTime", SqlDbType.Time) { Value = scheduleRequest.StartTime },
