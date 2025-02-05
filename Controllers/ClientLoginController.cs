@@ -26,11 +26,11 @@ namespace DrivingSchoolAPI.Controllers
             _configuration = configuration;
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetClientLogin(int id)
+        [HttpGet("{email}")]
+        public async Task<IActionResult> GetClientLogin(string email)
         {
             var clientLogin = await _context.ClientLogins
-                .FirstOrDefaultAsync(cl => cl.IdClientLogin == id);
+                .FirstOrDefaultAsync(cl => cl.ClientEmail == email);
 
             if (clientLogin == null)
             {
@@ -91,6 +91,21 @@ namespace DrivingSchoolAPI.Controllers
 
             // Aktualizacja hasła
             clientLogin.ClientPassword = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+            _context.SaveChanges();
+
+            return Ok("Hasło zostało zmienione.");
+        }
+
+        [HttpPut("NewPassword/{id}")]
+        public IActionResult NewPassword(int id, [FromBody] string password)
+        {
+            var clientLogin = _context.ClientLogins.FirstOrDefault(cl => cl.IdClient == id);
+            if (clientLogin == null)
+                return NotFound("Użytkownik nie istnieje.");
+
+
+            // Aktualizacja hasła
+            clientLogin.ClientPassword = BCrypt.Net.BCrypt.HashPassword(password);
             _context.SaveChanges();
 
             return Ok("Hasło zostało zmienione.");
