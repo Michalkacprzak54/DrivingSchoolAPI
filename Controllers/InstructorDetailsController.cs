@@ -245,7 +245,44 @@ namespace DrivingSchoolAPI.Controllers
                 return StatusCode(500, $"Błąd serwera: {ex.Message}");
             }
         }
+        [HttpPut("instructorEdit/{id}")]
+        public async Task<IActionResult> UpdateInstructorDetails(int id, [FromBody] InstructorDetailsDto request)
+        {
+            if (request == null || id <= 0)
+            {
+                return BadRequest("Nieprawidłowe dane do aktualizacji danych instruktora.");
+            }
 
+            try
+            {
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.InstructorPassword);
+
+                var result = await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC InstruktorEdycja @InstructorId, @InstructorEmail, @InstructorPassword, @InstructorStreet, @InstructorHouseNumber, @InstructorFlatNumber, @InstructorPhoneNumber, @InstructorCity, @InstructorZipCode",
+                    new SqlParameter("@InstructorId", id),
+                    new SqlParameter("@InstructorEmail", request.InstructorEmail),
+                    new SqlParameter("@InstructorPassword", hashedPassword),
+                    new SqlParameter("@InstructorStreet", request.InstructorStreet),
+                    new SqlParameter("@InstructorHouseNumber", request.InstructorHouseNumber),
+                    new SqlParameter("@InstructorFlatNumber", (object?)request.InstructorFlatNumber ?? DBNull.Value),
+                    new SqlParameter("@InstructorPhoneNumber", request.InstructorPhoneNumber),
+                    new SqlParameter("@InstructorCity", request.InstructorCity),
+                    new SqlParameter("@InstructorZipCode", request.InstructorZipCode)
+                );
+
+                if (result >= 0)
+                {
+                    return Ok("Dane instruktora zostały pomyślnie zaktualizowane.");
+                }
+
+                return BadRequest("Nie udało się zaktualizować danych instruktora.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd serwera: {ex.Message}");
+                return StatusCode(500, $"Błąd serwera: {ex.Message}");
+            }
+        }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInstructor(int id)
