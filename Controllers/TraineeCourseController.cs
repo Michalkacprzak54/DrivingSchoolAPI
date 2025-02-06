@@ -77,6 +77,59 @@ namespace DrivingSchoolAPI.Controllers
             return Ok(traineeCourses);
         }
 
+        [HttpGet("uncompletedTrainees")]
+        public async Task<ActionResult<IEnumerable<TraineeCourseDto>>> GetUncompletedTrainees()
+        {
+            var traineeCourses = await _context.TraineeCourses
+                .Include(tc => tc.Client)
+                .Include(tc => tc.VariantService)
+                    .ThenInclude(VariantService => VariantService.Service)
+                .Include(tc => tc.Status)
+                .Include(tc => tc.CourseDetails)
+                 .Where(tc => !tc.CourseDetails.InternalExam 
+                    && (tc.CourseDetails.TheoryHoursCount < tc.VariantService.NumberTheoryHours))
+                .Select(tc => new TraineeCourseDto
+                {
+                    IdTraineeCourse = tc.IdTraineeCourse,
+                    Client = new ClientDto
+                    {
+                        IdClient = tc.Client.IdClient,
+                        ClientFirstName = tc.Client.ClientFirstName,
+                        ClientLastName = tc.Client.ClientLastName
+                    },
+                    VarinatService = tc.VariantService,
+                    Service = new ServiceDto
+                    {
+                        IdService = tc.VariantService.Service.IdService,
+                        ServiceName = tc.VariantService.Service.ServiceName,
+                        ServicePlace = tc.VariantService.Service.ServicePlace,
+                        ServiceCategory = tc.VariantService.Service.ServiceCategory
+                    },
+                    Status = new StatusDto
+                    {
+                        IdStatus = tc.Status.IdStatus
+                    },
+                    StartDate = tc.StartDate,
+                    EndDate = tc.EndDate,
+                    PESEL = tc.PESEL,
+                    PKK = tc.PKK,
+                    MedicalCheck = tc.MedicalCheck,
+                    ParentalConsent = tc.ParentalConsent,
+                    Notes = tc.Notes,
+                    CourseDetails = new CourseDetailsDto
+                    {
+                        IdCourseDetails = tc.CourseDetails.IdCourseDetails,
+                        TheoryHoursCount = tc.CourseDetails.TheoryHoursCount,
+                        PraticeHoursCount = tc.CourseDetails.PraticeHoursCount,
+                        InternalExam = tc.CourseDetails.InternalExam,
+                        CreationDate = tc.CourseDetails.CreationDate,
+                        Notes = tc.CourseDetails.Notes
+                    }
+                }).ToListAsync();
+
+            return Ok(traineeCourses);
+        }
+
 
         // GET: api/TraineeCourse/5
         [HttpGet("{id}")]
@@ -198,10 +251,41 @@ namespace DrivingSchoolAPI.Controllers
             }
         }
 
+        [HttpPost("markPresence")]
+        public async Task<IActionResult> MarkLecturePresence([FromBody] List<LecturePresence> presenceList)
+        {
+            if (presenceList == null || !presenceList.Any())
+            {
+                return BadRequest("Lista obecności jest pusta.");
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                foreach (var presence in presenceList)
+                {
+                    await _context.Database.ExecuteSqlRawAsync(
+                        "EXEC AddLecturePresenceAndUpdateHours @IdSzczegoly, @IdHarmonogramWyklad, @DataObecnosci",
+                        new SqlParameter("@IdSzczegoly", presence.IdCourseDetails),
+                        new SqlParameter("@IdHarmonogramWyklad", presence.IdTheorySchedule),
+                        new SqlParameter("@DataObecnosci", presence.PresanceDate)
+                    );
+                }
+
+                await transaction.CommitAsync();
+                return Ok(new { Message = "Obecności zostały zapisane i liczba godzin teorii została zaktualizowana." });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, new { Message = "Wystąpił błąd podczas zapisywania obecności.", Error = ex.Message });
+            }
+        }
 
 
-        // PUT: api/TraineeCourse/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTraineeCourse(int id, TraineeCourse traineeCourse)
         {
