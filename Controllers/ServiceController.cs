@@ -26,6 +26,7 @@ namespace DrivingSchoolAPI.Controllers
         public async Task<ActionResult<IEnumerable<Service>>> GetServices()
         {
             return await _context.Services
+                .Include(s => s.VariantServices)
                 .ToListAsync();
         }
 
@@ -35,6 +36,7 @@ namespace DrivingSchoolAPI.Controllers
         {
             var service = await _context.Services
                 .Include(s => s.VariantServices)
+                
                 .Include(s => s.Photos)
                 .FirstAsync(s => s.IdService == id);
 
