@@ -11,6 +11,7 @@ using DrivingSchoolAPI.Dtos;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using Newtonsoft.Json;
+using Azure.Core;
 
 namespace DrivingSchoolAPI.Controllers
 {
@@ -281,7 +282,39 @@ namespace DrivingSchoolAPI.Controllers
                 return StatusCode(500, new { Message = "Wystąpił błąd podczas zapisywania obecności.", Error = ex.Message });
             }
         }
+        public class InternalExamRequest
+        {
+            public List<int> CourseDetailsIds { get; set; }
+        }
 
+        [HttpPost("markInternalExam")]
+        public async Task<IActionResult> MarkInternalExam([FromBody] InternalExamRequest request)
+        {
+            if (request == null || request.CourseDetailsIds == null || !request.CourseDetailsIds.Any())
+            {
+                return BadRequest("Brak kursantów do aktualizacji.");
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                foreach (var id in request.CourseDetailsIds)
+                {
+                    await _context.Database.ExecuteSqlRawAsync(
+                        "EXEC UpdateInternalExamStatus @IdSzczegoly",
+                        new SqlParameter("@IdSzczegoly", id)
+                    );
+                }
+
+                await transaction.CommitAsync();
+                return Ok(new { Message = "Egzaminy wewnętrzne zostały zaliczone." });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, new { Message = "Błąd podczas aktualizacji egzaminów.", Error = ex.Message });
+            }
+        }
 
 
 
