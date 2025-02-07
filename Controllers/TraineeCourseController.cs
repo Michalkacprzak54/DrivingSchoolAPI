@@ -12,6 +12,7 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using Newtonsoft.Json;
 using Azure.Core;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace DrivingSchoolAPI.Controllers
 {
@@ -44,6 +45,64 @@ namespace DrivingSchoolAPI.Controllers
                         IdClient = tc.Client.IdClient,
                         ClientFirstName = tc.Client.ClientFirstName,
                         ClientLastName = tc.Client.ClientLastName
+                    },
+                    VarinatService = tc.VariantService,
+                    Service = new ServiceDto
+                    {
+                        IdService = tc.VariantService.Service.IdService,
+                        ServiceName = tc.VariantService.Service.ServiceName,
+                        ServicePlace = tc.VariantService.Service.ServicePlace,
+                        ServiceCategory = tc.VariantService.Service.ServiceCategory
+                    },
+                    Status = new StatusDto
+                    {
+                        IdStatus = tc.Status.IdStatus
+                    },
+                    StartDate = tc.StartDate,
+                    EndDate = tc.EndDate,
+                    PESEL = tc.PESEL,
+                    PKK = tc.PKK,
+                    MedicalCheck = tc.MedicalCheck,
+                    ParentalConsent = tc.ParentalConsent,
+                    Notes = tc.Notes,
+                    CourseDetails = new CourseDetailsDto
+                    {
+                        IdCourseDetails = tc.CourseDetails.IdCourseDetails,
+                        TheoryHoursCount = tc.CourseDetails.TheoryHoursCount,
+                        PraticeHoursCount = tc.CourseDetails.PraticeHoursCount,
+                        InternalExam = tc.CourseDetails.InternalExam,
+                        CreationDate = tc.CourseDetails.CreationDate,
+                        Notes = tc.CourseDetails.Notes
+                    }
+                }).ToListAsync();
+
+            return Ok(traineeCourses);
+        }
+
+        [HttpGet("withoutTests")]
+        public async Task<ActionResult<IEnumerable<TraineeCourseDto>>> GetTraineeCoursesWithoutTests()
+        {
+            var traineeCourses = await _context.TraineeCourses
+                .Include(tc => tc.Client)
+                .Include(tc => tc.VariantService)
+                    .ThenInclude(VariantService => VariantService.Service)
+                .Include(tc => tc.Status)
+                .Include(tc => tc.CourseDetails)
+                    .Where(tc => tc.MedicalCheck == false || tc.MedicalCheck == null ||
+                    ((tc.ParentalConsent == false || tc.ParentalConsent == null) &&
+                    EF.Functions.DateDiffYear(tc.Client.ClientBirthDay, DateOnly.FromDateTime(DateTime.Today)) < 18))
+
+
+
+                .Select(tc => new TraineeCourseDto
+                {
+                    IdTraineeCourse = tc.IdTraineeCourse,
+                    Client = new ClientDto
+                    {
+                        IdClient = tc.Client.IdClient,
+                        ClientFirstName = tc.Client.ClientFirstName,
+                        ClientLastName = tc.Client.ClientLastName,
+                        ClientBirthDay = tc.Client.ClientBirthDay
                     },
                     VarinatService = tc.VariantService,
                     Service = new ServiceDto
@@ -282,6 +341,48 @@ namespace DrivingSchoolAPI.Controllers
                 return StatusCode(500, new { Message = "Wystąpił błąd podczas zapisywania obecności.", Error = ex.Message });
             }
         }
+
+        public class MedicalConsentRequest
+        {
+            public int IdClient { get; set; }
+            public bool MedicalCheck { get; set; }
+            public bool? ParentalConsent { get; set; } 
+        }
+
+
+        [HttpPost("updateMedicalAndParentalConsent")]
+        public async Task<IActionResult> UpdateMedicalAndParentalConsent([FromBody] List<MedicalConsentRequest> requests)
+        {
+            if (requests == null || !requests.Any())
+            {
+                return BadRequest("Brak danych w żądaniu.");
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                foreach(var request in requests)
+                {
+                    await _context.Database.ExecuteSqlRawAsync(
+                        "EXEC UpdateMedicalAndParentalConsent @IdKlient, @BadaniaLekarskie, @ZgodaRodzica",
+                        new SqlParameter("@IdKlient", request.IdClient),
+                        new SqlParameter("@BadaniaLekarskie", request.MedicalCheck),
+                        new SqlParameter("@ZgodaRodzica", (object?)request.ParentalConsent ?? DBNull.Value) // Obsługa NULL
+                    );
+                }
+                
+
+                await transaction.CommitAsync();
+                return Ok(new { Message = "Dane kursanta zostały zaktualizowane." });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, new { Message = "Błąd podczas aktualizacji danych.", Error = ex.Message });
+            }
+        }
+
+
         public class InternalExamRequest
         {
             public List<int> CourseDetailsIds { get; set; }
