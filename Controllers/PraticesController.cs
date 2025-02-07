@@ -32,7 +32,8 @@ namespace DrivingSchoolAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<Pratice>>> GetPratice(int id)
         {
-            var userPratice = await _context.Pratices.Where(p => p.IdCourseDetails == id).ToListAsync();
+            var userPratice = await _context.Pratices
+                .Where(p => p.IdCourseDetails == id).ToListAsync();
 
             if (userPratice == null)
             {
@@ -95,7 +96,8 @@ namespace DrivingSchoolAPI.Controllers
                 );
 
                 // Możesz zwrócić odpowiedź z danymi, jeśli chcesz
-                return CreatedAtAction("GetPratice", new { id = pratice.IdPratice }, pratice);
+                return Ok(pratice);
+
             }
             catch (Exception ex)
             {
