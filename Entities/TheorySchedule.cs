@@ -20,6 +20,8 @@ namespace DrivingSchoolAPI.Entities
         [Column("godzina_zakonczenia")]
         public TimeOnly? EndHour { get; set; }
 
+        [Column("czy_aktualne")]
+        public bool? is_Available { get; set; }
         public Instructor? Instructor { get; set; }
     }
 }
