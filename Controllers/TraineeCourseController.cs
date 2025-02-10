@@ -191,7 +191,6 @@ namespace DrivingSchoolAPI.Controllers
         }
 
 
-        // GET: api/TraineeCourse/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TraineeCourseDto>> GetTraineeCourseById(int id)
         {
@@ -203,6 +202,59 @@ namespace DrivingSchoolAPI.Controllers
                .Include(tc => tc.Status)
                .Include(tc => tc.CourseDetails)  
                     .Where(tc => tc.IdTraineeCourse == id)
+               .Select(tc => new TraineeCourseDto
+               {
+                   IdTraineeCourse = tc.IdTraineeCourse,
+                   Client = new ClientDto
+                   {
+                       IdClient = tc.Client.IdClient,
+                       ClientFirstName = tc.Client.ClientFirstName,
+                       ClientLastName = tc.Client.ClientLastName
+                   },
+                   VarinatService = tc.VariantService,
+                   Service = new ServiceDto
+                   {
+                       IdService = tc.VariantService.Service.IdService,
+                       ServiceName = tc.VariantService.Service.ServiceName,
+                       ServicePlace = tc.VariantService.Service.ServicePlace,
+                       ServiceCategory = tc.VariantService.Service.ServiceCategory
+                   },
+                   Status = new StatusDto
+                   {
+                       IdStatus = tc.Status.IdStatus
+                   },
+                   StartDate = tc.StartDate,
+                   EndDate = tc.EndDate,
+                   PESEL = tc.PESEL,
+                   PKK = tc.PKK,
+                   MedicalCheck = tc.MedicalCheck,
+                   ParentalConsent = tc.ParentalConsent,
+                   Notes = tc.Notes,
+                   CourseDetails = new CourseDetailsDto
+                   {
+                       IdCourseDetails = tc.CourseDetails.IdCourseDetails,
+                       TheoryHoursCount = tc.CourseDetails.TheoryHoursCount,
+                       PraticeHoursCount = tc.CourseDetails.PraticeHoursCount,
+                       InternalExam = tc.CourseDetails.InternalExam,
+                       CreationDate = tc.CourseDetails.CreationDate,
+                       Notes = tc.CourseDetails.Notes
+                   }
+               }).ToListAsync();
+
+            return Ok(traineeCourses);
+        }
+
+        [HttpGet("byDetailsId/{id}")]
+        public async Task<ActionResult<TraineeCourseDto>> GetTraineeCourseByDetailsId(int id)
+        {
+            var traineeCourses = await _context.TraineeCourses
+                .Where(tc => tc.Client.IdClient == id)
+               .Include(tc => tc.Client)
+               .Include(tc => tc.VariantService)
+                    .ThenInclude(VariantService => VariantService.Service)
+               .Include(tc => tc.Status)
+               .Include(tc => tc.CourseDetails)
+                    .Where(tc => tc.CourseDetails.IdCourseDetails == id)
                .Select(tc => new TraineeCourseDto
                {
                    IdTraineeCourse = tc.IdTraineeCourse,

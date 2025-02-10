@@ -21,7 +21,7 @@ namespace DrivingSchoolAPI.Controllers
             _context = context;
         }
 
-        // GET: api/PraticeSchedules
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PraticeSchedule>>> GetPraticeSchedules()
         {
@@ -32,16 +32,12 @@ namespace DrivingSchoolAPI.Controllers
                 .ToListAsync();
         }
 
-        // GET: api/PraticeSchedules/5
-        [HttpGet("{Category}")]
-        public async Task<ActionResult<PraticeSchedule>> GetPraticeSchedule(string Category)
+        [HttpGet("id/{id}")]
+        public async Task<ActionResult<PraticeSchedule>> GetPraticeScheduleById(int id)
         {
             var praticeSchedule = await _context.PraticeSchedules
                 .Include(ps => ps.Instructor)
-                    .ThenInclude(i => i.InstructorEntitlements)
-                        .ThenInclude(ie => ie.Entitlement)
-                .Where(ps => ps.Instructor.InstructorEntitlements.Any(ie => ie.Entitlement.EntitlementName == Category))
-                .ToListAsync();
+                .Where(ps => ps.IdInstructor == id).ToListAsync();
 
             if (praticeSchedule == null)
             {
@@ -51,8 +47,25 @@ namespace DrivingSchoolAPI.Controllers
             return Ok(praticeSchedule);
         }
 
-        // PUT: api/PraticeSchedules/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpGet("category/{Category}")]
+        public async Task<ActionResult<IEnumerable<PraticeSchedule>>> GetPraticeScheduleByCategory(string Category)
+        {
+            var praticeSchedule = await _context.PraticeSchedules
+                .Include(ps => ps.Instructor)
+                    .ThenInclude(i => i.InstructorEntitlements)
+                        .ThenInclude(ie => ie.Entitlement)
+                .Where(ps => ps.Instructor.InstructorEntitlements.Any(ie => ie.Entitlement.EntitlementName == Category))
+                .ToListAsync();
+
+            if (!praticeSchedule.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(praticeSchedule);
+        }
+
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPraticeSchedule(int id, PraticeSchedule praticeSchedule)
         {
@@ -90,7 +103,7 @@ namespace DrivingSchoolAPI.Controllers
             _context.PraticeSchedules.Add(praticeSchedule);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPraticeSchedule", new { id = praticeSchedule.IdPraticeSchedule }, praticeSchedule);
+            return CreatedAtAction("GetPraticeScheduleById", new { id = praticeSchedule.IdPraticeSchedule }, praticeSchedule);
         }
 
         // DELETE: api/PraticeSchedules/5

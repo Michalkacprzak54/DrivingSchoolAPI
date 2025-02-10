@@ -43,6 +43,20 @@ namespace DrivingSchoolAPI.Controllers
             return Ok(userPratice);
         }
 
+        [HttpGet("schedule/{id}")]
+        public async Task<ActionResult<IEnumerable<Pratice>>> GetPraticesByIdSchedule(int id)
+        {
+            var userPratice = await _context.Pratices
+                .Where(p => p.IdPraticeSchedule == id).FirstAsync();
+
+            if (userPratice == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(userPratice);
+        }
+
         // PUT: api/Pratices/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
