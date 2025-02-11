@@ -32,14 +32,14 @@ namespace DrivingSchoolAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<LecturePresence>> GetLecturePresence(int id)
         {
-            var lecturePresence = await _context.LecturePresences.FindAsync(id);
+            var lecturePresence = await _context.LecturePresences.Where(lp => lp.IdCourseDetails == id).ToListAsync();
 
             if (lecturePresence == null)
             {
                 return NotFound();
             }
 
-            return lecturePresence;
+            return Ok(lecturePresence);
         }
 
         // PUT: api/LecturePresences/5
