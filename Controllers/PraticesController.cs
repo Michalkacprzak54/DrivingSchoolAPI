@@ -152,7 +152,6 @@ namespace DrivingSchoolAPI.Controllers
         }
 
 
-        // DELETE: api/Pratices/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePratice(int id)
         {
@@ -162,11 +161,13 @@ namespace DrivingSchoolAPI.Controllers
                 return NotFound();
             }
 
-            _context.Pratices.Remove(pratice);
-            await _context.SaveChangesAsync();
+            // Wywołanie procedury składowanej
+            await _context.Database.ExecuteSqlRawAsync(
+                "EXEC DeletePracticeAndUpdateSchedule @IdPraktyka = {0}", id);
 
             return NoContent();
         }
+
 
         private bool PraticeExists(int id)
         {
