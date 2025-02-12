@@ -438,25 +438,35 @@ namespace DrivingSchoolAPI.Controllers
 
         public class InternalExamRequest
         {
-            public List<int> CourseDetailsIds { get; set; }
+            public List<CourseDetail> CourseDetails { get; set; }
+        }
+
+        public class CourseDetail
+        {
+            public int IdSzczegoly { get; set; }
+            public int GodzinyTeoria { get; set; }
         }
 
         [HttpPost("markInternalExam")]
         public async Task<IActionResult> MarkInternalExam([FromBody] InternalExamRequest request)
         {
-            if (request == null || request.CourseDetailsIds == null || !request.CourseDetailsIds.Any())
+            if (request == null || request.CourseDetails == null || !request.CourseDetails.Any())
             {
-                return BadRequest("Brak kursantów do aktualizacji.");
+                return BadRequest(new { Message = "Brak kursantów do aktualizacji." });
             }
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                foreach (var id in request.CourseDetailsIds)
+                foreach (var courseDetail in request.CourseDetails)
                 {
                     await _context.Database.ExecuteSqlRawAsync(
-                        "EXEC UpdateInternalExamStatus @IdSzczegoly",
-                        new SqlParameter("@IdSzczegoly", id)
+                        "EXEC UpdateInternalExamStatus @IdSzczegoly, @GodzinyTeoria",
+                        new[]
+                        {
+                    new SqlParameter("@IdSzczegoly", courseDetail.IdSzczegoly),
+                    new SqlParameter("@GodzinyTeoria", courseDetail.GodzinyTeoria)
+                        }
                     );
                 }
 
@@ -466,9 +476,14 @@ namespace DrivingSchoolAPI.Controllers
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                return StatusCode(500, new { Message = "Błąd podczas aktualizacji egzaminów.", Error = ex.Message });
+                return StatusCode(500, new
+                {
+                    Message = "Błąd podczas aktualizacji egzaminów.",
+                    Error = ex.Message
+                });
             }
         }
+
 
 
 
