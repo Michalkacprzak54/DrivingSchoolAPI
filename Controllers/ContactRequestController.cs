@@ -31,13 +31,13 @@ namespace DrivingSchoolAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);  // Walidacja danych
+                return BadRequest(ModelState);  
             }
 
             _context.ContactRequests.Add(contactRequest);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetContactRequest", new { id = contactRequest.IdContactRequest }, contactRequest);
+            return StatusCode(201);
         }
 
         [HttpPut("resolve/{id}")]
