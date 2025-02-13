@@ -20,6 +20,9 @@ namespace DrivingSchoolAPI.Entities
 
         [Column("czy_aktualne")]
         public bool is_Available { get; set; }
+
+        [Column("czy_skonczone")]
+        public bool isDone { get; set; }
         public Instructor? Instructor { get; set; }
 
         [JsonIgnore]

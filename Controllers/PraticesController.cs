@@ -133,7 +133,7 @@ namespace DrivingSchoolAPI.Controllers
             {
                 // Wywołanie procedury składowanej
                 await _context.Database.ExecuteSqlRawAsync(
-                    "EXEC UpdatePraktyka @IdPraktyka = {0}, @NewDataPraktyk = {1}, @NewGodzinaRozpoczecia = {2}, @NewGodzinaZakonczenia = {3}, @NewIdStatus = {4}",
+                    "EXEC UpdatePraktyka @id_harmonogram_praktyka = {0}, @NewDataPraktyk = {1}, @NewGodzinaRozpoczecia = {2}, @NewGodzinaZakonczenia = {3}, @NewIdStatus = {4}",
                     id,
                     Pratice.PraticeDate,
                     Pratice.StartHour,
@@ -141,7 +141,7 @@ namespace DrivingSchoolAPI.Controllers
                     Pratice.IdStatus
                 );
 
-                return NoContent(); // 204 No Content, jeśli operacja się powiedzie
+                return Ok(201); // 204 No Content, jeśli operacja się powiedzie
             }
             catch (Exception ex)
             {
