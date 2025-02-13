@@ -22,6 +22,9 @@ namespace DrivingSchoolAPI.Entities
 
         [Column("czy_aktualne")]
         public bool? is_Available { get; set; }
+
+        [Column("liczba_godzin")]
+        public int? HourCount { get; set; }
         public Instructor? Instructor { get; set; }
     }
 }

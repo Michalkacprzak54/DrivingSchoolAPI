@@ -78,17 +78,17 @@ namespace DrivingSchoolAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTheorySchedule(int id)
         {
-            var theorySchedule = await _context.TheorySchedules.FindAsync(id);
-            if (theorySchedule == null)
+            if (id <= 0)
             {
-                return NotFound();
+                return BadRequest("Nieprawidłowy ID wykładu.");
             }
 
-            _context.TheorySchedules.Remove(theorySchedule);
-            await _context.SaveChangesAsync();
+            // Wywołanie procedury RemoveHarmonogram
+            await _context.Database.ExecuteSqlRawAsync("EXEC RemoveHarmonogram @id_wyklad = {0}", id);
 
             return NoContent();
         }
+
 
         private bool TheoryScheduleExists(int id)
         {
