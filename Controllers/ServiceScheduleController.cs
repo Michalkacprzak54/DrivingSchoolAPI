@@ -47,6 +47,20 @@ namespace DrivingSchoolAPI.Controllers
             return Ok(servicesSchedule);
         }
 
+        [HttpGet("byClientServiceId/{id}")]
+        public async Task<ActionResult<IEnumerable<ServiceSchedule>>> GetServiceScheduleByClientServiceId(int id)
+        {
+            var servicesSchedule = await _context.ServiceSchedules
+                .Include(ss => ss.ClientService)
+                .Include(ss => ss.PraticeSchedule)
+                    .ThenInclude(ps => ps.Instructor)
+                .Include(ss => ss.Status)
+                .Where(ss => ss.IdClientService == id)
+                .ToListAsync();
+
+            return Ok(servicesSchedule);
+        }
+
         [HttpPost]
         public async Task<ActionResult<ServiceSchedule>> PostServiceSchedule(ServiceSchedule serviceSchedule)
         {
@@ -70,9 +84,22 @@ namespace DrivingSchoolAPI.Controllers
                 Console.WriteLine($"Error: {ex.Message}");
                 return StatusCode(500, "Wystąpił błąd podczas zapisywania danych.");
             }
+        }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteServiceSchedule(int id)
+        {
+            var serviceSchedule = await _context.ServiceSchedules.FindAsync(id);
+            if (serviceSchedule == null)
+            {
+                return NotFound();
+            }
 
+            // Wywołanie procedury składowanej
+            await _context.Database.ExecuteSqlRawAsync(
+                "EXEC DeleteServiceScheduleAndUpdateSchedule @IdUslugaHarmonogram = {0}", id);
 
+            return NoContent();
         }
     }
 }
