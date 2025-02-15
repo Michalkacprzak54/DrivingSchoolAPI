@@ -25,6 +25,10 @@ namespace DrivingSchoolAPI.Entities
 
         [Column("liczba_godzin")]
         public int? HourCount { get; set; }
+
+        [Column("egzamin_wewnetrzny")]
+        public bool? InternalExam { get; set; }
+
         public Instructor? Instructor { get; set; }
     }
 }
