@@ -146,8 +146,7 @@ namespace DrivingSchoolAPI.Controllers
                     .ThenInclude(VariantService => VariantService.Service)
                 .Include(tc => tc.Status)
                 .Include(tc => tc.CourseDetails)
-                 .Where(tc => !tc.CourseDetails.InternalExam 
-                    && (tc.CourseDetails.TheoryHoursCount < tc.VariantService.NumberTheoryHours))
+                 .Where(tc => !tc.CourseDetails.InternalExam)
                 .Select(tc => new TraineeCourseDto
                 {
                     IdTraineeCourse = tc.IdTraineeCourse,
