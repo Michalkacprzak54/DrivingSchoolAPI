@@ -349,8 +349,6 @@ namespace DrivingSchoolAPI.Controllers
                 // Wywołujemy procedurę składowaną
                 await _context.Database.ExecuteSqlRawAsync(execSql, parameters);
 
-                // Możesz logować komunikat wynikowy
-                Console.WriteLine($"Result: {resultMessage.Value}");
 
                 // Jeśli procedura zakończyła się sukcesem, zwracamy wynik
                 return Ok(new { Message = resultMessage.Value });
