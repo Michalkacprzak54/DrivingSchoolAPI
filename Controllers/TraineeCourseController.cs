@@ -246,7 +246,7 @@ namespace DrivingSchoolAPI.Controllers
         public async Task<ActionResult<TraineeCourseDto>> GetTraineeCourseByDetailsId(int id)
         {
             var traineeCourses = await _context.TraineeCourses
-                .Where(tc => tc.Client.IdClient == id)
+                //.Where(tc => tc.Client.IdClient == id)
                .Include(tc => tc.Client)
                .Include(tc => tc.VariantService)
                     .ThenInclude(VariantService => VariantService.Service)
