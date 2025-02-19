@@ -27,10 +27,51 @@ The **Driving School** project is a **.NET Web API** application designed to man
 ✔ **Role-Based Access Control (RBAC)** – Different privileges for **students, instructors, and administrators**.  
 ✔ **RESTful API** – API endpoints for managing all entities.  
 
+## 🚗 Student (Client) Role  
+### 📅 Lesson Booking  
+- **Schedule, reschedule, or cancel** driving lessons.  
+- View **upcoming and past lesson history**.  
+
+### 📝 Progress Tracking  
+- View **instructor feedback** and progress reports.  
+- Track **completed and pending lesson milestones**.  
+
+### 🔄 Profile Management  
+- Update **personal details and preferences**.  
+- Manage **account security and settings**.  
+  
+## 👨‍🏫 Instructor Role  
+### 📋 Lesson Management  
+- View **assigned lessons and schedules**.  
+- Update **lesson status** (e.g., completed, canceled).  
+
+### 🔄 Availability Control  
+- Set **personal availability** for bookings.  
+- Block **specific time slots** when unavailable.  
+
+### 📊 Student Progress Monitoring  
+- Provide **lesson feedback** and progress reports.  
+- Assess **students** and mark skill levels.  
+- **Receive and verify documents** from students.  
+- **Conduct and grade internal driving exams**.  
+
 ## 🛠️ Administrator Role  
-👤 **User Management** – Manage students, instructors, and staff.  
-📅 **Lesson Control** – Oversee lesson scheduling and assignments.  
-💰 **Finance Management** – Track payments.0
+### 👤 User and Instructor Management  
+- Add, update, or remove **instructors**.  
+- Reset **passwords** and manage user credentials.  
+- Enroll **students in courses** and manage their registrations.  
+
+### 📅 Lesson & Instructor Management  
+- Manage **theoretical lectures** and assign **instructors** to them.  
+- Oversee **lesson schedules** without direct booking control over **practical lessons**.  
+
+### 💰 Finance & Payments  
+- **Define and update** lesson pricing.  
+- Track **student payments** and confirm transactions.  
+- **Manually process payments** when necessary.  
+
+### 🛠 System Configuration  
+- Update **service offerings** (e.g., adding new lesson types).
 
 ## 💼 My Role in the Project  
 I was responsible for **everything** in this project. I designed, developed, and implemented the entire backend using **.NET 8**. My contributions include:  
@@ -47,5 +88,5 @@ This project was a **solo development** effort. I independently handled all aspe
 - **Backend:** .NET 8, Web API, Entity Framework Core  
 - **Database:** MSSQL  
 - **Authentication:** JWT Tokens  
-- **Other Tools:** Git, Swagger for API testing  
+- **Other Tools:** Git, Swagger for API testing, Visual Studio  
 
