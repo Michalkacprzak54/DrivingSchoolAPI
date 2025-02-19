@@ -1,8 +1,8 @@
 # Driving School – Backend API  
 
 ## 📌 Project Link  
-[Driving School Backend](this repo)  
-[Driving School Frontend](https://github.com/Michalkacprzak54/DrivingSchoolReactApp)
+Backend (this repo)  
+[ Frontend](https://github.com/Michalkacprzak54/DrivingSchoolReactApp)
 ## 📖 Project Description  
 The **Driving School** project is a **.NET Web API** application designed to manage driving lessons, students, instructors, and scheduling. The backend handles all business logic, database interactions, and provides a REST API for the frontend to interact with. The system includes functionalities for lesson scheduling, instructor management, student records, and payments. It also implements authentication and role-based access control for students, instructors, and administrators.  
 
