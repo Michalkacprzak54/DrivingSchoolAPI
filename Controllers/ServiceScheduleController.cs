@@ -47,6 +47,19 @@ namespace DrivingSchoolAPI.Controllers
             return Ok(servicesSchedule);
         }
 
+        [HttpGet("schedule/{idSchedule}")]
+        public async Task<ActionResult<IEnumerable<ServiceSchedule>>> GetServiceScheduleByIdSchedule(int idSchedule)
+        {
+            var servicesSchedule = await _context.ServiceSchedules
+                .Include(ss => ss.ClientService)
+                .Include(ss => ss.PraticeSchedule)
+                .Include(ss => ss.Status)
+                .Where(ss => ss.IdPraticeSchedule == idSchedule)
+                .FirstAsync();
+
+            return Ok(servicesSchedule);
+        }
+
         [HttpGet("byClientServiceId/{id}")]
         public async Task<ActionResult<IEnumerable<ServiceSchedule>>> GetServiceScheduleByClientServiceId(int id)
         {
