@@ -24,7 +24,6 @@ namespace DrivingSchoolAPI.Controllers
             _context = context;
         }
 
-        // GET: api/Client
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Client>>> GetClient()
         {
@@ -37,15 +36,12 @@ namespace DrivingSchoolAPI.Controllers
             return Ok(clients);
         }
 
-        // GET: api/Client/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Client>> GetClient(int id)
         {
             var client = await _context.Clients
                 .Include(c => c.City)
                 .Include(c => c.ZipCode)
-                //.Include(c => c.ClientServices)
-                //    .ThenInclude(cs => cs.Service)
                 .FirstAsync(c => c.IdClient == id);
 
             if (client == null)
@@ -202,11 +198,6 @@ namespace DrivingSchoolAPI.Controllers
         
 
             return NoContent();
-        }
-
-        private bool ClientExists(int id)
-        {
-            return _context.Clients.Any(e => e.IdClient == id);
         }
     }
 }

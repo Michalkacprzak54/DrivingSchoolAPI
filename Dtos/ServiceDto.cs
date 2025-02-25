@@ -7,6 +7,5 @@
         public string? ServiceType { get; set; }
         public string? ServicePlace { get; set; }
         public string? ServiceCategory { get; set; }
-        // Dodaj inne pola, które chcesz zwrócić
     }
 }
