@@ -104,13 +104,27 @@ namespace DrivingSchoolAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteService(int id)
         {
-            var service = await _context.Services.FindAsync(id);
+            var service = await _context.Services
+                .Include(s => s.Photos)
+                .Include(s => s.VariantServices)
+                .FirstAsync(s => s.IdService == id);
             if (service == null)
             {
                 return NotFound();
             }
 
+            if (service.Photos != null && service.Photos.Any())
+            {
+                _context.Photos.RemoveRange(service.Photos);
+            }
+
+            if(service.VariantServices != null && service.VariantServices.Any())
+            {
+                _context.VariantServices.RemoveRange(service.VariantServices);
+            }
+
             _context.Services.Remove(service);
+
             await _context.SaveChangesAsync();
 
             return NoContent();
