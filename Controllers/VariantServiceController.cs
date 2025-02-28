@@ -96,6 +96,18 @@ namespace DrivingSchoolAPI.Controllers
             return NoContent();
         }
 
+        [HttpGet("{id}/checkOrders")]
+        public async Task<IActionResult> CheckIfVariantPurchased(int id)
+        {
+            var hasOrders = await _context.ClientServices.AnyAsync(cs => cs.VariantServiceId == id);
+
+            if(hasOrders)
+            {
+                return Ok(new { purchased = true });
+            }
+            return Ok(new { purchased = false });
+        }
+
         private bool VariantServiceExists(int id)
         {
             return _context.VariantServices.Any(e => e.IdVariantService == id);

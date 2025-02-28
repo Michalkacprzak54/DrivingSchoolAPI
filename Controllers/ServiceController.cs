@@ -90,7 +90,17 @@ namespace DrivingSchoolAPI.Controllers
             return CreatedAtAction("GetService", new { id = service.IdService }, service);
         }
 
-        // DELETE: api/Service/5
+        [HttpGet("{id}/checkOrders")]
+        public async Task<IActionResult> CheckIfServicePurchased(int id)
+        {
+            var hasOrders = await _context.ClientServices.AnyAsync(cs => cs.ServiceId == id);
+
+            if(hasOrders)
+            {
+                return Ok(new { purchased = true});
+            }
+            return Ok(new { purchased = false});
+        }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteService(int id)
         {
